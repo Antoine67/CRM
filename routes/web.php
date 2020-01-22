@@ -19,6 +19,7 @@ Route::get('/signin', 'AuthController@signin');
 Route::get('/authorize', 'AuthController@gettoken');
 
 Route::get('/login', 'LoginController@get');
+Route::post('/login','LoginController@fullLogout');
 
 Route::group(['middleware' => 'use.ssl'], function () {
     //SSL pages there - certs have to be setup
