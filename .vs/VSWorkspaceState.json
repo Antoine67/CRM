@@ -4,9 +4,12 @@
     "\\app",
     "\\app\\Http",
     "\\app\\Http\\Controllers",
+    "\\app\\TokenStore",
     "\\resources",
-    "\\resources\\views"
+    "\\resources\\views",
+    "\\resources\\views\\layouts",
+    "\\routes"
   ],
-  "SelectedNode": "\\app\\Http\\Controllers\\CustomerController.php",
+  "SelectedNode": "\\app\\Http\\Controllers\\ProfileController.php",
   "PreviewInSolutionExplorer": false
 }

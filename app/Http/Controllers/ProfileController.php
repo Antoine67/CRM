@@ -10,9 +10,6 @@ use Session;
 class ProfileController extends Controller
 {
     public function get() {
-      if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-      }
 
       $tokenCache = new \App\TokenStore\TokenCache;
 
@@ -23,8 +20,12 @@ class ProfileController extends Controller
                     ->setReturnType(Model\User::class)
                     ->execute();
 
-      //echo 'User: '.$user->getDisplayName();
-      return view('profile')->with('user',$user);
+      $sharepointRoot = $graph->createRequest('GET', 'https://graph.microsoft.com/v1.0/sites/root')
+                        ->execute();
+
+      return view('profile')
+        ->with('user',$user)
+        ->with('sharepointRoot',$sharepointRoot->getBody());
     }
 
     public function logout(Request $request) {

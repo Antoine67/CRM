@@ -21,6 +21,7 @@
                 <div class="w-100">
                     {{ $user->getMail() }}
                     {{ $user->getJobTitle() }}
+                    {{ $sharepointRoot['webUrl'] }}
                 </div>
             </div>
 

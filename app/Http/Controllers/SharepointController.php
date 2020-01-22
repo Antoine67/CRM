@@ -3,42 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Microsoft\Graph\Graph;
+use Microsoft\Graph\Model;
+use Session;
+
 class SharepointController extends Controller
 {
     public function get() {
- /*
-        $username = 'username@tenant.onmicrosoft.com';
-        $password = 'password';
-        $url = "https://tenant.sharepoint.com/";
-        $connectionStatus;
 
-        try {
-            $authCtx = new AuthenticationContext($Url);
-            $authCtx->acquireTokenForUser($username,$password);
-            $ctx = new ClientContext($Url,$authCtx);
-            $connectionStatus = printTasks($ctx);
-        }
-        catch (Exception $e) {
-            $connectionStatus = 'Authentication failed: '.  $e->getMessage() . "\n";
-        }
+      $tokenCache = new \App\TokenStore\TokenCache;
 
-        */
-        $connectionStatus = "";
-        return view('sharepoint')
-        ->with('connectionStatus', $connectionStatus);
+      $graph = new Graph();
+      $graph->setAccessToken($tokenCache->getAccessToken());
+
+
+      $getMessagesUrl = 'https://graph.microsoft.com/v1.0/sites/root';//.http_build_query($messageQueryParams);
+      $messages = $graph->createRequest('GET', $getMessagesUrl)
+                        ->execute();
+      dd($messages);
+
+      foreach($messages as $msg) {
+        echo 'Message: '.$msg->getSubject().'<br/>';
+      }
+
+
     }
-
-    function printTasks(ClientContext $ctx){
-	        $ret;
-	        $listTitle = 'Tasks';
-	        $web = $ctx->getWeb();
-                $list = $web->getLists()->getByTitle($listTitle);
-	        $items = $list->getItems();
-                $ctx->load($items);
-                $ctx->executeQuery();
-	        foreach( $items->getData() as $item ) {
-	            $ret .= "Task: '{$item->Title}'\r\n";
-	        }
-            return $ret;
-    }
+ 
 }
