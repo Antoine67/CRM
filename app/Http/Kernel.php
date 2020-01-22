@@ -62,6 +62,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 	'use.ssl' => \App\Http\Middleware\SSLMiddleware::class,
+	'need.microsoft' => \App\Http\Middleware\MicrosoftLoginMiddleware::class,
     ];
 
     /**
