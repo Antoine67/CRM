@@ -16,15 +16,12 @@ class AuthController extends Controller
       // Initialize the OAuth client
       $oauthClient = new \League\OAuth2\Client\Provider\GenericProvider([
         'clientId'                => env('OAUTH_APP_ID'),
-        //'clientSecret'            => env('OAUTH_APP_PASSWORD'),
+        'clientSecret'            => env('OAUTH_APP_PASSWORD'),
         'redirectUri'             => env('OAUTH_REDIRECT_URI'),
         'urlAuthorize'            => env('OAUTH_AUTHORITY').env('OAUTH_AUTHORIZE_ENDPOINT'),
         'urlAccessToken'          => env('OAUTH_AUTHORITY').env('OAUTH_TOKEN_ENDPOINT'),
         'urlResourceOwnerDetails' => '',
         'scopes'                  => env('OAUTH_SCOPES'),
-        //'username' => $request->input('username'),
-        //'password' => $request->input('password'),
-        'grant_type' => "password",
       ]);
 
       // Generate the auth URL

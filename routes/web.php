@@ -29,6 +29,7 @@ Route::group(['middleware' => 'use.ssl'], function () {
 Route::group(['middleware' => 'need.microsoft'], function () {
     
     Route::get('/sharepoint', 'SharepointController@get');
+    Route::post('/sharepoint', 'SharepointController@post');
 
     Route::get('/customer/{id}', 'CustomerController@getById');
     Route::get('/customer', 'CustomerController@getAll');

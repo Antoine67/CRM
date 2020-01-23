@@ -19,7 +19,7 @@
         <div class="card-body">            
             <div class="row justify-content-center">
                 <div class="w-100">
-                    
+                    <a href="{{ url('customer') }}">Clients</a>
                 </div>
             </div>
 

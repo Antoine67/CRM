@@ -11,6 +11,7 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script>function openUrl(url) { window.open(url, '_blank'); }</script>
     @yield('js')
 
     <!-- Fonts -->
@@ -61,6 +62,9 @@
                                     <a class="dropdown-item" href="{{ url('profile') }}">
                                         {{ __('Profil') }}
                                     </a>
+                                    <a class="dropdown-item" href="{{ url('sharepoint') }}">
+                                        {{ __('Config Sharepoint') }}
+                                    </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="#"
                                        onclick="event.preventDefault();
@@ -78,15 +82,30 @@
                 </div>
             </div>
         </nav>
-        @if(Request::get('successMessage') ) 
+
+        {{-- Display success/error messages via passed GET vars or directly via $msgError or $successMEssage vars --}}
+
+        @if(Request::get('successMessage') || isset($successMessage)) 
           <div class="alert alert-success alert-dismissible" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ Request::get('successMessage') }}
+            @if (Request::get('successMessage') !== null)
+                {{ Request::get('successMessage') }}
+            @else
+                @isset ($successMessage)
+                    {{ $successMessage }}
+                @endisset
+            @endif
           </div>
-        @elseif (Request::get('msgError'))
+        @elseif (Request::get('msgError') || isset($msgError))
           <div class="alert alert-danger alert-dismissible" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ Request::get('msgError') }}
+            @if (Request::get('msgError') !== null)
+                {{ Request::get('msgError') }}
+            @else
+                @isset ($msgError)
+                    {{ $msgError }}
+                @endisset
+            @endif
           </div>
         @endif
 

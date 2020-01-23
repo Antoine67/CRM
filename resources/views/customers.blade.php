@@ -22,7 +22,12 @@
             <div class="row justify-content-center">
                 <div class="w-100">
                     <div class="card">
-                        
+                        @isset($sharepoint)
+                            @foreach($sharepoint as $customer)
+                                <a href="{{ url('customer') . '/' . $customer['id'] }}">{{ $customer['name'] }}</a> - 
+                                <a href="{{$customer['webUrl'] }}">lien</a><br/>
+                            @endforeach
+                        @endisset
                     </div>
                 </div>
             </div>
