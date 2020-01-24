@@ -1,0 +1,36 @@
+.customers-container {
+	padding:5px;
+}
+
+.customer-name {
+    cursor: pointer;
+}
+
+.customer-logos {
+    text-align: center;
+}
+
+#table_id_filter {
+    width: 100%;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    text-align: center;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    width: 75%;
+}
+
+#table_id_filter label {
+    width: 100%;
+}
+
+#loading {
+    position: absolute;
+    display: block;
+    margin: 0 auto;
+    font-size: 20px;
+    width: 100%;
+    text-align:center;
+}

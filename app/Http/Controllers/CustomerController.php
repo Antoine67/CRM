@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use Storage;
+use Carbon\Carbon;
 use App\Customer;
 
 class CustomerController extends Controller
@@ -18,7 +19,30 @@ class CustomerController extends Controller
             return view('customer')->with('customer',$customer);
         }
 
+        $customer = $this->updateOrCreateCustomer($id);
 
+        return view('customer')->with('customer',$customer);
+    }
+
+    private function fillFolders($customer, $dataFolder, $isExtranetFolder) {
+        foreach($dataFolder as $folder) {
+
+            if(!$isExtranetFolder)$customer->addFolder(new \App\Folder($folder));
+            else $customer->addExtranetFolder(new \App\Folder($folder));
+            
+            if($folder['folder']['childCount'] > 0) {
+                //If folder contains others folders
+                //TODO Manage if many folders
+            }
+        }
+    }
+
+    public function updateById($id, Request $request) {
+        $customer = $this->updateOrCreateCustomer($id);
+        return redirect()->back();
+    }
+
+    private function updateOrCreateCustomer($id) {
         $tokenCache = new \App\TokenStore\TokenCache;
         $graph = new Graph();
         $graph->setAccessToken($tokenCache->getAccessToken());
@@ -43,9 +67,8 @@ class CustomerController extends Controller
 
         $urlExtranetFolder = "https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com/drives/b!L3KH91MLuEG2wDMCyDRPnLIbRYh8ofNHlKCVtzt2FyRmUez0j23JTJnX9jLqS95_/items/$extranetFolderId/children";
         $dataExtranetFolder = $graph->createRequest('GET', $urlExtranetFolder)->execute()->getBody();
-        
 
-
+        $associatedFiles = null; //TODO
 
         //Create new customer and fill props
         $customer = new Customer([
@@ -53,29 +76,15 @@ class CustomerController extends Controller
                                     'extranetId' => $extranetFolderId,
                                     'mainFolderWebUrl' => $mainFolderWebUrl,
                                     'extranetFolderWebUrl' => $extranetFolderWebUrl,
+                                    'lastUpdatedProfile' => Carbon::now('Europe/Paris')->toDateTimeString(),
+                                    'associatedFiles' => $associatedFiles,
                                  ]);
 
         $this->fillFolders($customer, $dataClientFolder['value'], false);
         $this->fillFolders($customer, $dataExtranetFolder['value'], true);
-
-        //dd($customer);
         Storage::put('customers/customer-'.$customer->getId().'.json', json_encode($customer));
 
-        return view('customer')->with('customer',$customer);
-    }
-
-    private function fillFolders($customer, $dataFolder, $isExtranetFolder) {
-        foreach($dataFolder as $folder) {
-
-            if(!$isExtranetFolder)$customer->addFolder(new \App\Folder($folder));
-            else $customer->addExtranetFolder(new \App\Folder($folder));
-            
-            if($folder['folder']['childCount'] > 0) {
-                //If folder contains others folders
-                //TODO Manage if many folders
-            }
-        }
-        
+        return $customer;
     }
 
     /***
@@ -84,14 +93,14 @@ class CustomerController extends Controller
     public function getAll(Request $request)  {
     
       if(Storage::exists('sharepoint-clients.json')) {
-        $sharepoint = json_decode(Storage::get('sharepoint-clients.json'), true);
-
+        $customers = json_decode(Storage::get('sharepoint-clients.json'), true);
         return view("customers")
-            ->with('sharepoint',$sharepoint);
+            ->with('customers',$customers);
       }else {
         return view("customers")
            ->with ('msgError','Issue with sharepoint customer file : missing or not found. Try refreshing data, or check with your administrator');
       }
       
     }
+
 }

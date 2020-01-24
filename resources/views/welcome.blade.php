@@ -19,7 +19,11 @@
         <div class="card-body">            
             <div class="row justify-content-center">
                 <div class="w-100">
+                @if(!Session::has('user') || !Session::has('access_token'))
+                    <a href="{{ url('login') }}">Connectez vous pour avoir accès à la plateforme</a>
+                @else
                     <a href="{{ url('customer') }}">Clients</a>
+                @endif
                 </div>
             </div>
 

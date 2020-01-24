@@ -17,7 +17,7 @@ class MicrosoftLoginMiddleware
     public function handle($request, Closure $next)
     {
 	if(!Session::has('user') || !Session::has('access_token')) {
-            return redirect('/signin');
+            return redirect('/login');
         }
 
         return $next($request);

@@ -11,7 +11,10 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <script>function openUrl(url) { window.open(url, '_blank'); }</script>
+    <script>
+        function openUrl(url) { window.open(url, '_blank'); }
+        function openUrlSameTab(url) { window.location.href = url;}
+    </script>
     @yield('js')
 
     <!-- Fonts -->
@@ -21,6 +24,11 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('css')
+    <style>
+        main {
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -36,7 +44,14 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                    @if(Session::has('user') && Session::has('access_token'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('customer') }}">{{ __('Clients') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://www.office.com/">{{ __('Office') }}</a>
+                        </li>
+                    @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -46,25 +61,20 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('login') }}">{{ __('Connexion') }}</a>
                             </li>
-                            <!--
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Inscription') }}</a>
-                                </li>
-                            @endif
-                            -->
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="{{url('profile') }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Session::get('user')->getDisplayName() }} <span class="caret"></span>
                                 </a>
-                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ url('profile') }}">
                                         {{ __('Profil') }}
                                     </a>
+                                @if(Session::has('permission_level') && Session::get('permission_level') >= env('EDITOR_LEVEL', 2))
                                     <a class="dropdown-item" href="{{ url('sharepoint') }}">
                                         {{ __('Config Sharepoint') }}
                                     </a>
+                                @endif
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="#"
                                        onclick="event.preventDefault();
@@ -85,11 +95,11 @@
 
         {{-- Display success/error messages via passed GET vars or directly via $msgError or $successMEssage vars --}}
 
-        @if(Request::get('successMessage') || isset($successMessage)) 
+        @if(Session::has('successMessage') || isset($successMessage)) 
           <div class="alert alert-success alert-dismissible" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            @if (Request::get('successMessage') !== null)
-                {{ Request::get('successMessage') }}
+            @if (Session::has('successMessage'))
+                {{ Session::get('successMessage') }}
             @else
                 @isset ($successMessage)
                     {{ $successMessage }}

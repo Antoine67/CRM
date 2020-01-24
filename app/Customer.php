@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Customer implements \JsonSerializable
 {
@@ -108,6 +109,21 @@ class Customer implements \JsonSerializable
     {
         if (array_key_exists("extranetFolders", $this->_props)) {
             return $this->_props["extranetFolders"];
+        } else return null;
+    }
+
+    public function getLastUpdatedProfile() {
+        if (array_key_exists("lastUpdatedProfile", $this->_props)) {
+               
+                $date = Carbon::create($this->_props["lastUpdatedProfile"])->format('d/m/Y à H:i');
+                return $date ;
+        } else return null;
+        
+    }
+
+    public function getAssociatedFiles() {
+        if (array_key_exists("associatedFiles", $this->_props)) {
+            return $this->_props["associatedFiles"];
         } else return null;
     }
 }
