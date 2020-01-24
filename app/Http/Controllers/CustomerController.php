@@ -12,16 +12,14 @@ class CustomerController extends Controller
 {
     public function getById($id, Request $request)  {
 
+        //If local file already exists, simply read data from it
         if(Storage::exists('customers/customer-'.$id.'.json')) {
-            $customer = new Customer(json_decode(
-                                                 Storage::get('customers/customer-'.$id.'.json'), true
-                                     ));
-
-           
+            $customer = new Customer(json_decode( Storage::get('customers/customer-'.$id.'.json'), true ));
             return view('customer')->with('customer',$customer);
         }
-        $tokenCache = new \App\TokenStore\TokenCache;
 
+
+        $tokenCache = new \App\TokenStore\TokenCache;
         $graph = new Graph();
         $graph->setAccessToken($tokenCache->getAccessToken());
 

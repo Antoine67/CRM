@@ -32,6 +32,7 @@ class ProfileController extends Controller
         $tokenCache = new \App\TokenStore\TokenCache;
         $tokenCache->clearTokens();
         Session::forget('user');
-        return redirect('/')->with('successMsg',"Déconnecté");
+        Session::forget('permission_level');
+        return redirect('/?successMessage=Déconnecté');
     }
 }

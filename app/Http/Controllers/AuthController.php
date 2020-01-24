@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use Request;
 use Session;
 use Debugbar;
+use PermUser;
+use Storage;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
+
 
 class AuthController extends Controller
 {
@@ -80,10 +83,39 @@ class AuthController extends Controller
            $user = $graph->createRequest('GET', '/me')
                     ->setReturnType(Model\User::class)
                     ->execute();
-            Session::put('user',$user);
+           Session::put('user',$user);
 
-          // Redirect back to mail page
-          return redirect('/');//->route('mail');
+           //Give permissions if user already exists, else add user to permission file with default perms
+           $defaultPerm = 1;
+           $permissionLevel = $defaultPerm;
+           $userCreated = false;
+           if(Storage::exists('users.json')) {
+                $usersArray = json_decode( Storage::get('users.json'), true );
+                if($usersArray != null) {
+                    foreach($usersArray as $currentUser) {
+                    
+                        if( !array_key_exists('email',$currentUser) ) continue;
+                        if( strcmp ($currentUser['email'], $user->getMail() ) == 0){
+                            if( !array_key_exists('permission_level',$currentUser) ) continue;
+                            $permissionLevel = $currentUser['permission_level'];
+                            $userCreated = true;
+                            break;
+                        }
+                    }
+                }
+          }else { // If file doesnt exist yet or not foun
+                $usersArray = array();
+          }
+          if(!$userCreated) {
+            array_push( $usersArray, [ 'email' => $user->getMail(), 'permission_level' => $permissionLevel ] );;
+          }
+
+          //Store it in session and storage
+          Session::put('permission_level', $permissionLevel);
+          Storage::put('users.json',json_encode($usersArray));
+
+          // Redirect back to default page
+          return back(); //redirect('/');
         }
         catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
           exit('ERROR getting tokens: '.$e->getMessage());
