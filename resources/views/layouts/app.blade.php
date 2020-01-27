@@ -106,6 +106,7 @@
                 @endisset
             @endif
           </div>
+          <?php \Session::forget('successMessage'); ?>
         @elseif (Request::get('msgError') || isset($msgError))
           <div class="alert alert-danger alert-dismissible" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -117,6 +118,7 @@
                 @endisset
             @endif
           </div>
+          <?php \Session::forget('msgError'); ?>
         @endif
 
         <main class="py-4">
@@ -125,3 +127,5 @@
     </div>
 </body>
 </html>
+
+

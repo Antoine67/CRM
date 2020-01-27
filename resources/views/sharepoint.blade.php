@@ -12,11 +12,29 @@
 
 @section('content')
 
-<a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mise à jour des clients manuelle') }} </a>
+<a href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mise à jour des clients manuelle') }} </a>
 
 <form id="refresh-customer-form" action="{{ url('sharepoint') }}" method="POST" style="display: none;">
+    <input type="text" name="type" value="list"> </input>
     @csrf
 </form>
+
+<hr/>
+
+<p class="text-muted">
+    @isset($lastAllCustomersUpdate)
+    Dernière mise à jour le {{ $lastAllCustomersUpdate }}
+    @else
+    Aucune mise à jour totale trouvée
+    @endisset
+</p>
+<a href="#" onclick="event.preventDefault(); document.getElementById('refresh-all-customer-form').submit();"> {{ __('Mise à jour des profils de TOUS les clients') }} </a>
+
+<form id="refresh-all-customer-form" action="{{ url('sharepoint') }}" method="POST" style="display: none;">
+    <input type="text" name="type" value="all"> </input> 
+    @csrf
+</form>
+<hr/>
 
 
 

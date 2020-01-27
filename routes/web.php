@@ -25,7 +25,7 @@ Route::group(['middleware' => 'use.ssl'], function () {
 //Routes which need to be logged in with a microsoft account
 Route::group(['middleware' => 'need.microsoft'], function () {
 
-    Route::get('/', function () { return view('welcome'); });
+    Route::get('/', 'WelcomeController@get');
 
     Route::get('/sharepoint', 'SharepointController@get');
     Route::post('/sharepoint', 'SharepointController@post');

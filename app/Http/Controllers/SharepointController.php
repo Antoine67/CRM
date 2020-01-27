@@ -7,6 +7,7 @@ use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use Session;
 use Storage;
+use Carbon\Carbon;
 
 
 /*
@@ -26,15 +27,34 @@ https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com/drives/b!L3KH91MLuEG
 class SharepointController extends Controller
 {
     public function get() {
-      return view("sharepoint");
+        if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
+        $conf = json_decode(Storage::get('customers.conf'), true);
+        $lastAllCustomersUpdate = null;
+        if(isset ($conf['lastAllCustomersUpdate'])) $lastAllCustomersUpdate = Carbon::create($conf['lastAllCustomersUpdate'])->format('d/m/Y à H:i');
+
+
+        return view("sharepoint")
+        ->with('lastAllCustomersUpdate', $lastAllCustomersUpdate);
     }
     
-    public function post() {
+    public function post(Request $request) {
         if(!Session::has('user') || !Session::has('access_token')) {
+            //Not logged in
             return redirect('/');
         }
-        $msg = $this->refreshCustomersFromSharepoint();
-        return redirect("/sharepoint?$msg");
+        if(!Session::has('permission_level') || Session::get('permission_level') < env('EDITOR_LEVEL', 2)) {
+            //Trying to reach a forbidden access
+            return redirect('/');
+        }
+        switch($request->input('type')) {
+            case 'list' :
+                $msg = $this->refreshCustomersFromSharepoint();
+                return redirect()->back()->with('successMsg', $msg);
+            case 'all' :
+                $msg = $this->refreshAllCustomersFromSharepoint();
+                return redirect()->back()->with('successMsg', $msg);
+        }
+        
     }
 
     /***
@@ -57,12 +77,15 @@ class SharepointController extends Controller
         $sharepointExtranetData = $graph->createRequest('GET', $urlExtranet)->execute();
         $extranetData = $this->recursiveCallNextLink($sharepointExtranetData->getBody(), $graph, $sharepointExtranetData->getBody()['value'], $maxNumberIterations,0);
 
-
+        if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
+        $conf = json_decode(Storage::get('customers.conf'), true);
+        $conf['lastCustomersUpdate'] = Carbon::now('Europe/Paris')->toDateTimeString();
 
         Storage::put('sharepoint-clients.json', json_encode($clientsData));
         Storage::put('sharepoint-extranet.json', json_encode($extranetData));
+        Storage::put('customers.conf', json_encode($conf));
 
-        return "successMessage=Successfully executed";
+        return "Successfully executed";
     }
 
     /***
@@ -81,6 +104,26 @@ class SharepointController extends Controller
         $currentIter+=1;
 
         return $this->recursiveCallNextLink($data->getBody(), $graph, $mergedData, $maxNumberIterations, $currentIter);
+    }
+
+    public function refreshAllCustomersFromSharepoint() {
+        $customers = array();
+        if(Storage::exists('sharepoint-clients.json') ) {
+            $customers = json_decode(Storage::get('sharepoint-clients.json'), true);
+        }
+
+        //Limit for dev purpose, to remove when production
+        $i=0;
+        foreach($customers as $customerData) {
+            $customer = new \App\Customer($customerData);
+            if($i>10) break;
+            app('App\Http\Controllers\CustomerController')->updateOrCreateCustomer($customer->getId());
+            $i++;
+        }
+
+        if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
+        $conf = json_decode(Storage::get('customers.conf'), true);
+        $conf['lastAllCustomersUpdate'] = Carbon::now('Europe/Paris')->toDateTimeString();
     }
 
  

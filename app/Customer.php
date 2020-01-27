@@ -20,6 +20,9 @@ class Customer implements \JsonSerializable
         $this->_props['folders'] = array();
         $this->_props['extranetFolders'] = array();
 
+        if (!isset($this->_props['associatedFiles'])) $this->_props['associatedFiles'] = array();
+        
+
         //Create Folder vars from array vars
         if (array_key_exists("_folders", $_props)) {
             foreach($_props['_folders'] as $folder) {
@@ -52,6 +55,10 @@ class Customer implements \JsonSerializable
 
     public function addExtranetFolder(Folder $folder) {
         array_push($this->_props['extranetFolders'], $folder);
+    }
+
+    public function addAssociatedFiles($name, $givenName, $path = null, $downloadUrl = null) {
+         array_push($this->_props['associatedFiles'], ['name' => $name,'givenName' => $givenName, 'path' => $path, 'downloadUrl' => $downloadUrl]);
     }
 
     
@@ -122,7 +129,7 @@ class Customer implements \JsonSerializable
     }
 
     public function getAssociatedFiles() {
-        if (array_key_exists("associatedFiles", $this->_props)) {
+        if (isset($this->_props["associatedFiles"]) && count($this->_props["associatedFiles"]) > 0) {
             return $this->_props["associatedFiles"];
         } else return null;
     }
