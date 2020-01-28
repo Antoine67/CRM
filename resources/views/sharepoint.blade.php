@@ -12,7 +12,7 @@
 
 @section('content')
 
-<a href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mise à jour des clients manuelle') }} </a>
+<a href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mise à jour de la liste de clients') }} </a>
 
 <form id="refresh-customer-form" action="{{ url('sharepoint') }}" method="POST" style="display: none;">
     <input type="text" name="type" value="list"> </input>

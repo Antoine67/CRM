@@ -25,7 +25,13 @@
     </div>
     @if(Session::has('permission_level') && Session::get('permission_level') >= env('EDITOR_LEVEL', 2))
     <a href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mettre à jour la liste de clients') }} </a>
-    <p class="text-muted"> Dernière mise à jour le {{ $lastUpdate }} </p>
+    <p class="text-muted">
+        @isset($lastUpdate)
+        Dernière mise à jour le {{ $lastUpdate }}
+        @else
+        Aucune mise à jour récente trouvée
+        @endisset
+    </p>
     <form id="refresh-customer-form" action="{{ url('sharepoint') }}" method="POST" style="display: none;">
         @csrf
         <input type="text" name="type" value="list"> </input>

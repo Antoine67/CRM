@@ -15,3 +15,9 @@ Emplacement : C:\Windows\System32\drivers\etc\hosts
 
 Ajouter la ligne suivante 
 `127.0.0.1 plp.acesi`
+
+## Pour éxecuter les tâches programmées :
+php artisan schedule:run
+
+Ainsi pour le run avec crontab :
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1 

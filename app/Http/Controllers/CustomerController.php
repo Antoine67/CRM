@@ -162,7 +162,12 @@ class CustomerController extends Controller
       if(Storage::exists('sharepoint-clients.json') && Storage::exists('customers.conf')) {
         $customers = json_decode(Storage::get('sharepoint-clients.json'), true);
         $conf = json_decode(Storage::get('customers.conf'), true);
-        $lastUpdate = Carbon::create($conf["lastCustomersUpdate"])->format('d/m/Y à H:i');
+
+        $lastUpdate = null;
+        if(isset($conf["lastCustomersUpdate"])) {
+            $lastUpdate = Carbon::create($conf["lastCustomersUpdate"])->format('d/m/Y à H:i');
+        }
+
         return view("customers")
             ->with('customers',$customers)
             ->with('lastUpdate', $lastUpdate);

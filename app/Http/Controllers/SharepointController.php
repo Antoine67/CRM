@@ -14,6 +14,8 @@ use Carbon\Carbon;
  
 https://blog.atwork.at/post/Access-files-in-OneDrive-or-SharePoint-with-Microsoft-Graph-and-the-Excel-API
 
+Example of microsoft graph API links
+
 https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com:/sites/Extranet 
 https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com:/sites/Extranet:/drives?$select=name,id //Folder info, id , name
 https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com/drives/b!L3KH91MLuEG2wDMCyDRPnLIbRYh8ofNHlKCVtzt2FyRmUez0j23JTJnX9jLqS95_ //Find url
@@ -29,9 +31,10 @@ class SharepointController extends Controller
     public function get() {
         if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
         $conf = json_decode(Storage::get('customers.conf'), true);
+
+        //Get last update date
         $lastAllCustomersUpdate = null;
         if(isset ($conf['lastAllCustomersUpdate'])) $lastAllCustomersUpdate = Carbon::create($conf['lastAllCustomersUpdate'])->format('d/m/Y à H:i');
-
 
         return view("sharepoint")
         ->with('lastAllCustomersUpdate', $lastAllCustomersUpdate);
@@ -51,7 +54,9 @@ class SharepointController extends Controller
                 $msg = $this->refreshCustomersFromSharepoint();
                 return redirect()->back()->with('successMsg', $msg);
             case 'all' :
-                $msg = $this->refreshAllCustomersFromSharepoint();
+                //$msg = $this->refreshAllCustomersFromSharepoint();
+                //TODO Run schedule task
+                $msg = "Mise à jour en cours, cela peut prendre jusqu'à quelques dizaines de minutes";
                 return redirect()->back()->with('successMsg', $msg);
         }
         
@@ -124,6 +129,7 @@ class SharepointController extends Controller
         if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
         $conf = json_decode(Storage::get('customers.conf'), true);
         $conf['lastAllCustomersUpdate'] = Carbon::now('Europe/Paris')->toDateTimeString();
+        Storage::put('customers.conf', json_encode($conf));
     }
 
  
