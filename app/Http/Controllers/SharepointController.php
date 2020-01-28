@@ -8,6 +8,7 @@ use Microsoft\Graph\Model;
 use Session;
 use Storage;
 use Carbon\Carbon;
+use Artisan;
 
 
 /*
@@ -56,60 +57,13 @@ class SharepointController extends Controller
             case 'all' :
                 //$msg = $this->refreshAllCustomersFromSharepoint();
                 //TODO Run schedule task
+                Artisan::call('schedule:runa');
                 $msg = "Mise à jour en cours, cela peut prendre jusqu'à quelques dizaines de minutes";
                 return redirect()->back()->with('successMsg', $msg);
         }
         
     }
 
-    /***
-    * Get data from Microsoft Graph API and save it into a local file, to avoid making excessive requests
-    ***/
-    public function refreshCustomersFromSharepoint() {
-        $tokenCache = new \App\TokenStore\TokenCache;
-
-        $graph = new Graph();
-        $graph->setAccessToken($tokenCache->getAccessToken());
-
-        $maxNumberIterations = 10;
-
-        $urlClients = 'https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com/drives/b!zRfTFj8KRkW6OuScTfSQPLIbRYh8ofNHlKCVtzt2FyRmUez0j23JTJnX9jLqS95_/root/children';
-        $sharepointClientsData = $graph->createRequest('GET', $urlClients)->execute();
-
-        $clientsData = $this->recursiveCallNextLink($sharepointClientsData->getBody(), $graph, $sharepointClientsData->getBody()['value'], $maxNumberIterations,0);
-
-        $urlExtranet = 'https://graph.microsoft.com/v1.0/sites/acesi.sharepoint.com/drives/b!L3KH91MLuEG2wDMCyDRPnLIbRYh8ofNHlKCVtzt2FyRmUez0j23JTJnX9jLqS95_/root/children' ;
-        $sharepointExtranetData = $graph->createRequest('GET', $urlExtranet)->execute();
-        $extranetData = $this->recursiveCallNextLink($sharepointExtranetData->getBody(), $graph, $sharepointExtranetData->getBody()['value'], $maxNumberIterations,0);
-
-        if(!Storage::exists('customers.conf'))  Storage::put('customers.conf', '');
-        $conf = json_decode(Storage::get('customers.conf'), true);
-        $conf['lastCustomersUpdate'] = Carbon::now('Europe/Paris')->toDateTimeString();
-
-        Storage::put('sharepoint-clients.json', json_encode($clientsData));
-        Storage::put('sharepoint-extranet.json', json_encode($extranetData));
-        Storage::put('customers.conf', json_encode($conf));
-
-        return "Successfully executed";
-    }
-
-    /***
-    * If data returned by API is too important, it will return a 'next link', this function allows to recursively get data from these next links
-    *
-    */
-    private function recursiveCallNextLink($previousSPData, $graph, $values, $maxNumberIterations, $currentIter=0) {
-        if(!array_key_exists('@odata.nextLink',$previousSPData) || $currentIter >= $maxNumberIterations) {
-            return $values;
-        }
-        
-
-        $data = $graph->createRequest('GET', $previousSPData['@odata.nextLink'])->execute();
-        $mergedData= array_merge($values, $data->getBody()['value']);
-
-        $currentIter+=1;
-
-        return $this->recursiveCallNextLink($data->getBody(), $graph, $mergedData, $maxNumberIterations, $currentIter);
-    }
 
     public function refreshAllCustomersFromSharepoint() {
         $customers = array();

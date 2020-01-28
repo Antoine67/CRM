@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\RefreshAllCustomers::class,
+        Commands\RefreshListCustomers::class,
+        Commands\RefreshGraphGrafana::class,
     ];
 
     /**
@@ -26,17 +28,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         //Refresh grafana graphs
-        $schedule->call('App\Http\Controllers\GrafanaController@refreshAllGraph')
+        $schedule->command('refresh:grafana')//>call('App\Http\Controllers\GrafanaController@refreshAllGraph')
 	    ->everyMinute()
 	    ->appendOutputTo(storage_path().'/logs/grafana.log');
 
         //Refresh ALL customers data 
-        $schedule->call('App\Http\Controllers\SharepointController@refreshAllCustomersFromSharepoint')
+        $schedule->command('refresh:customersAll')//call('App\Http\Controllers\SharepointController@refreshAllCustomersFromSharepoint')
 	    ->dailyAt('01:00')
 	    ->appendOutputTo(storage_path().'/logs/customersAll.log');
 
         //Refresh customers list
-        $schedule->call('App\Http\Controllers\SharepointController@refreshCustomersFromSharepoint')
+        $schedule->command('refresh:customersList')//->call('App\Http\Controllers\SharepointController@refreshCustomersFromSharepoint')
 	    ->twiceDaily(1, 13)
 	    ->appendOutputTo(storage_path().'/logs/customersList.log');
         
