@@ -22,10 +22,8 @@ Route::group(['middleware' => 'use.ssl'], function () {
     //SSL pages there - certs have to be setup
 });
 
-//Routes which need to be logged in with a microsoft account
-Route::group(['middleware' => 'need.microsoft'], function () {
-
-    Route::get('/', 'WelcomeController@get');
+//Routes which need to be logged in with a microsoft account and have an ACESI, editor, or admin account
+Route::group(['middleware' => ['need.microsoft','user.level'] ], function () {
 
     Route::get('/sharepoint', 'SharepointController@get');
     Route::post('/sharepoint', 'SharepointController@post');
@@ -36,7 +34,16 @@ Route::group(['middleware' => 'need.microsoft'], function () {
 
 
 
+   
+});
+
+//Routes which need to be logged in with a microsoft account
+Route::group(['middleware' => 'need.microsoft' ], function () {
+    Route::get('/', 'WelcomeController@get');
+
     Route::get('/profile', 'ProfileController@get');
     Route::post('/logout', 'ProfileController@logout');
 });
+
+
 

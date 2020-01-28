@@ -18,6 +18,8 @@
 
 @section('content')
 
+    
+
     <div>
         <h1 class="d-inline-block">Clients </h1>
     </div>
@@ -31,9 +33,24 @@
     @endif
 
     <div class="card customers-container">
+
+    <!--
+    <div style="text-align:center;">
+        <div class="input-group mb-4 w-75">
+            <div class="input-group-prepend">
+                <button id="button-addon7" type="submit" class="btn btn-success"><i class="fa fa-search"></i></button>
+            </div>
+            <input id="input-datatable-search" type="search" placeholder="Filtrer par mot clé ..." aria-describedby="button-addon7" class="form-control">
+        </div>
+        </div>
+    -->
+
+
     <p id="loading">Chargement des clients en cours... </p>
     @isset($customers)
+
         <table id="table_id" class="display" style="opacity: 0;">
+
 			<thead>
 				<tr>
 					<td class="text-center">Nom</td>

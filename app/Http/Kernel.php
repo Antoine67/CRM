@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 	'use.ssl' => \App\Http\Middleware\SSLMiddleware::class,
 	'need.microsoft' => \App\Http\Middleware\MicrosoftLoginMiddleware::class,
+	'user.level' => \App\Http\Middleware\UserLevelMiddleware::class,
     ];
 
     /**

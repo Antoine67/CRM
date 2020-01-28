@@ -86,9 +86,16 @@ class AuthController extends Controller
            Session::put('user',$user);
 
            //Give permissions if user already exists, else add user to permission file with default perms
-           $defaultPerm = 1;
+           if(strpos($user->getMail(),"@ace-si.com")){
+            $defaultPerm = 1;
+           }else {
+            $defaultPerm = 0;
+           }
+
+           
            $permissionLevel = $defaultPerm;
            $userCreated = false;
+           $usersArray = array();
            if(Storage::exists('users.json')) {
                 $usersArray = json_decode( Storage::get('users.json'), true );
                 if($usersArray != null) {
@@ -102,9 +109,10 @@ class AuthController extends Controller
                             break;
                         }
                     }
+                }else {
+                    $usersArray = array();
                 }
-          }else { // If file doesnt exist yet or not foun
-                $usersArray = array();
+          }else { // If file doesnt exist yet or not found
           }
           if(!$userCreated) {
             array_push( $usersArray, [ 'email' => $user->getMail(), 'permission_level' => $permissionLevel ] );;

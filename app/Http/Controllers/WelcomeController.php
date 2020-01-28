@@ -28,8 +28,10 @@ class WelcomeController extends Controller
         $conf = json_decode(Storage::get('grafana.conf'), true);
         
         if(isset($conf['lastAllGrafUpdate'])) {
-            $lastUpd = Carbon::create($conf['lastAllGrafUpdate']);
-            if($lastUpd->diffInSeconds(Carbon::now()) < env('GRAFANA_REFRESH_COOLDOWN', 1800)) {
+            $lastUpd = Carbon::create($conf['lastAllGrafUpdate'],'Europe/Paris');
+
+            //Only refresh every X seconds, may be upgraded with cron to avoid user to wait for loading
+            if($lastUpd->diffInSeconds(Carbon::now('Europe/Paris')) < env('GRAFANA_REFRESH_COOLDOWN', 1800)) {
                 return;
             }
         }
@@ -52,7 +54,7 @@ class WelcomeController extends Controller
 
         
         
-        $conf['lastAllGrafUpdate'] = Carbon::now('Europe/Paris');
+        $conf['lastAllGrafUpdate'] = Carbon::now('Europe/Paris')->toDateTimeString();
         Storage::put('grafana.conf', json_encode($conf));
     }
 

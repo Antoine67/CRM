@@ -30,11 +30,14 @@ $(document).ready( function () {
             $('#table_id').css('opacity', '1');
             $('#table_id').children().css('opacity','1');
             $('#table_id').show();
+
+            $('#table_id_filter').find('input').addClass("form-control d-inline-block w-50");
         },
         
 		"pageLength": 50,
 		"lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100,"All"]],
 	} );
+
 
 
 });
