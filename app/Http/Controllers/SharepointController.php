@@ -52,12 +52,11 @@ class SharepointController extends Controller
         }
         switch($request->input('type')) {
             case 'list' :
-                $msg = $this->refreshCustomersFromSharepoint();
+                $msg = Artisan::call('refresh:customersList');
                 return redirect()->back()->with('successMsg', $msg);
             case 'all' :
                 //$msg = $this->refreshAllCustomersFromSharepoint();
-                //TODO Run schedule task
-                Artisan::call('schedule:runa');
+                Artisan::call('refresh:customersAll');
                 $msg = "Mise à jour en cours, cela peut prendre jusqu'à quelques dizaines de minutes";
                 return redirect()->back()->with('successMsg', $msg);
         }

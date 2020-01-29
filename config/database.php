@@ -91,6 +91,18 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'easyvista' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL_EASYVISTA'),
+            'host' => env('DB_HOST_EASYVISTA'),
+            'port' => env('DB_PORT_EASYVISTA'),
+            'database' => env('DB_DATABASE_EASYVISTA'),
+            'username' => env('DB_USERNAME_EASYVISTA'),
+            'password' => env('DB_PASSWORD_EASYVISTA'),
+            'charset' => 'utf8',
+            'prefix' => '',
+        ],
+
     ],
 
     /*

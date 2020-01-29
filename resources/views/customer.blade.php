@@ -4,7 +4,6 @@
     <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
 
 <style>
-    
 
 
 </style>
@@ -27,7 +26,7 @@
         <div class="container emp-profile">
             <form method="post">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-4 rmv-resp">
                         <div class="profile-img">
                             <img src="{{ asset('img/default.jpg') }}" alt="Logo"/>
                             <!--
@@ -73,14 +72,23 @@
                     -->
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-4 rmv-resp">
                         <div class="profile-work">
                             <p>Général</p>
-                            <a href="">Info</a><br/>
+                            <a>Info</a><br/>
                             
                             <p>Contact</p>
-                            <a href="">+33 6 15 48 XX XX</a><br/>
-                             <a href="">test@email.fr</a><br/>
+                            <a>+33 6 15 48 XX XX</a><br/>
+                            <a href="mailto:test@email.fr">test@email.fr</a><br/>
+                            <p>Contact VITA</p>
+                            <a>
+                                Tél: 
+                                @if($customer->get('E_TEL_VITA') !== null)
+                                    {{ $customer->get('E_TEL_VITA') }}
+                                @else
+                                    Non renseigné
+                                @endif
+                            </a><br/>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -188,7 +196,39 @@
                                         <div id="collapseDiv3" class="collapse shadow-sm show">
                                             <div class="card">
                                                 <div class="card-body">
-                                                    <p class="font-italic mb-0 text-muted">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.</p>
+                                                    <div class="container">
+                                                        <div class="row">
+                                                        @if ($customer->getArray('tickets') !== null)
+                                                            
+                                                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+                                                            @foreach ($customer->getArray('tickets') as $ticket)
+                                                                <div class="panel panel-default ">
+                                                                <a data-toggle="collapse" class="collapsed panel-title" data-parent="#accordion" href="#collapse{{ $ticket->get('RFC_NUMBER') }}" aria-expanded="true" aria-controls="collaps{{ $ticket->get('RFC_NUMBER') }}">
+                                                                    <div class="panel-heading" role="tab" id="heading{{ $ticket->get('RFC_NUMBER') }}">
+                                                                        Ticket n° <b>{{ $ticket->get('RFC_NUMBER') }}</b>
+                                                                        @if($ticket->getLastUpdate() !== null)
+                                                                            (modifié le {{ $ticket->getLastUpdate() }})
+                                                                        @endif
+                                                                    </div>
+                                                                     </a>
+                                                                    <div id="collapse{{ $ticket->get('RFC_NUMBER') }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                                                        <hr/>
+                                                                        <div class="panel-body" style="padding: 5px;">
+                                                                            <!-- Remove HTML tags -->
+                                                                            {{ strip_tags(htmlspecialchars_decode($ticket->get('COMMENT'))) }}
+                                                                        </div>
+                                                                        <hr/>
+                                                                    </div>
+                                                                </div>
+                                                             @endforeach
+                                                                
+                                                            </div>
+                                                        
+                                                        @else
+                                                        <p class="font-italic mb-0 text-muted">Aucun ticket trouvé</p>
+                                                        @endif
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

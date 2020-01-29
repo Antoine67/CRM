@@ -3,13 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
-class Folder implements \JsonSerializable
+class Ticket  implements \JsonSerializable
 {
     protected $_props;
 
     /**
-    * Construct a new Folder
+    * Construct a new Ticket
     *
     * @param array $pr$_propsopDict A list of properties to set
     */
@@ -58,31 +59,9 @@ class Folder implements \JsonSerializable
         } else return null;
     }
 
-    public function getChildCount()
-    {
-        if (array_key_exists("folder", $this->_props) && array_key_exists("childCount", $this->_props['folder'])) {
-            return $this->_props['folder']['childCount'];   
-        } else return null;
-    }
-
-    public function getName()
-    {
-        if (array_key_exists("name", $this->_props)) {
-            return $this->_props["name"];
-        } else return null;
-    }
-
-    public function getWebUrl()
-    {
-        if (array_key_exists("webUrl", $this->_props)) {
-            return $this->_props["webUrl"];
-        } else return null;
-    }
-
-    public function getId()
-    {
-        if (array_key_exists("id", $this->_props)) {
-            return $this->_props["id"];
+    public function getLastUpdate() {
+        if (array_key_exists("LAST_UPDATE", $this->_props)) {
+            return Carbon::create($this->_props["LAST_UPDATE"])->format('d/m/Y à H:i');
         } else return null;
     }
 

@@ -40,62 +40,40 @@
 
     <div class="card customers-container">
 
-    <!--
-    <div style="text-align:center;">
-        <div class="input-group mb-4 w-75">
-            <div class="input-group-prepend">
-                <button id="button-addon7" type="submit" class="btn btn-success"><i class="fa fa-search"></i></button>
-            </div>
-            <input id="input-datatable-search" type="search" placeholder="Filtrer par mot clé ..." aria-describedby="button-addon7" class="form-control">
-        </div>
-        </div>
-    -->
+        <p id="loading">Chargement des clients en cours... </p>
+        @isset($customers)
 
+            <table id="table_id" class="display" style="opacity: 0;">
 
-    <p id="loading">Chargement des clients en cours... </p>
-    @isset($customers)
+			    <thead>
+				    <tr>
+					    <td class="text-center">Nom</td>
+					    <td class="text-center">Liens</td>
+				    </tr>
+			    </thead>
+		    <tbody>
+            @foreach($customers as $customer)
 
-        <table id="table_id" class="display" style="opacity: 0;">
-
-			<thead>
-				<tr>
-					<td class="text-center">Nom</td>
-					<td class="text-center">Liens</td>
-				</tr>
-			</thead>
-		<tbody>
-        @foreach($customers as $customer)
-
-        <tr id="tr_{{ $customer['id'] }}">
+            <tr id="tr_{{ $customer->getId() }}">
             
-			<td class="customer-name all" onClick='openUrlSameTab(" {{ url('customer') . '/' . $customer['id'] }} ")';><span name="">{{ $customer['name'] }}</span></td>
+			    <td class="customer-name all" onClick='openUrlSameTab(" {{ url('customer') . '/' . $customer->getId() }} ")';><span name="">{{ $customer->getName() }}</span></td>
             
             
-			<td class="customer-logos desktop">
-                <a href="#" onClick="openUrl('{{ $customer['webUrl'] }}');">
-                    <span name=""><i class="fas fa-folder-open"></i></span>
-                </a>
-            </td>
+			    <td class="customer-logos desktop">
+                    @if(isset($customer->getProperties()['webUrl']))
+                    <a href="#" onClick="openUrl('{{ $customer->getProperties()['webUrl'] }}');">
+                        <span name=""><i class="fas fa-folder-open"></i></span>
+                    </a>
+                    @endif
+                </td>
             
         
-		</tr>
+		    </tr>
 
-        <!--
-        <a href="{{ url('customer') . '/' . $customer['id'] }}">
-            <li>
-                                    
-                <div class="float-sm-right">
-                    <a href="#" class="icon icon-github" onClick="openUrl('{{ $customer['webUrl'] }}');"><i class="fas fa-folder-open"></i></a>
-                </div>
-                                    
-                    {{ $customer['name'] }}
-                                    
-            </li>
-        </a>-->
-        @endforeach
+            @endforeach
             
 
-     @endisset
+         @endisset
     </div>
 
 

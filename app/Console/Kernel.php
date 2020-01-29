@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -41,7 +41,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('refresh:customersList')//->call('App\Http\Controllers\SharepointController@refreshCustomersFromSharepoint')
 	    ->twiceDaily(1, 13)
 	    ->appendOutputTo(storage_path().'/logs/customersList.log');
-        
+
+
+        $schedule->call(function () {
+
+             dd(DB::connection('easyvista')->table('EVO_DATA50005.50005.SD_REQUEST ')->first());
+
+        });
         
     }
 

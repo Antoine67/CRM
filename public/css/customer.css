@@ -1,4 +1,4 @@
-
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css");
 /* Collapse div */
 .with-chevron[aria-expanded='true'] i {
     display: block;
@@ -132,3 +132,41 @@
     text-decoration: none;
     color: grey;
 }
+
+/* Start Tickets */
+
+    
+
+.panel-title:before {
+    float: right !important;
+    font-family: FontAwesome;
+    content:"\f068";
+    padding-right: 5px;
+}
+
+.panel-group {
+    width:100%;
+}
+.panel-group .collapsed:before {
+    float: right !important;
+    content:"\f067";
+}
+a:hover, 
+a:active, 
+a:focus  {
+    text-decoration:none;
+}
+
+/* End Tickets */
+
+
+
+
+/* Start Responsive */
+
+@media screen and (max-width: 760px) {
+    .rmv-resp {
+        display: none;
+    }
+}
+/* End Responsive */

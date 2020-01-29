@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\app",
-    "\\app\\Http",
-    "\\app\\Http\\Controllers",
-    "\\public",
-    "\\public\\js",
+    "\\app\\Console",
+    "\\app\\Console\\Commands",
+    "\\app\\TokenStore",
+    "\\config",
     "\\resources",
     "\\resources\\views",
     "\\resources\\views\\layouts",
     "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\profile.blade.php",
+  "SelectedNode": "\\config\\database.php",
   "PreviewInSolutionExplorer": false
 }

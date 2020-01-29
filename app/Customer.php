@@ -19,11 +19,11 @@ class Customer implements \JsonSerializable
 		$this->_props = $_props;
         $this->_props['folders'] = array();
         $this->_props['extranetFolders'] = array();
+        $this->_props['tickets'] = array();
 
         if (!isset($this->_props['associatedFiles'])) $this->_props['associatedFiles'] = array();
-        
 
-        //Create Folder vars from array vars
+        //Create Object vars from array vars
         if (array_key_exists("_folders", $_props)) {
             foreach($_props['_folders'] as $folder) {
                 $this->addFolder(new Folder($folder));
@@ -37,6 +37,13 @@ class Customer implements \JsonSerializable
             }
             unset($this->_props["_extranetFolders"]);
         }
+
+        if (array_key_exists("_tickets", $_props)) {
+            foreach($_props['_tickets'] as $ticket) {
+                $this->addTickets([new Ticket($ticket)]);
+            }
+            unset($this->_props["_tickets"]);
+        }
     }
 
     /**
@@ -49,6 +56,18 @@ class Customer implements \JsonSerializable
         return $this->_props;
     }
 
+    public function get($prop) {
+        if (array_key_exists($prop, $this->_props)) {
+            return $this->_props[$prop];
+        } else return null;
+    }
+
+    public function getArray($prop) {
+        if (array_key_exists($prop, $this->_props) && count($this->_props[$prop]) > 0) {
+            return $this->_props[$prop];
+        } else return null;
+    }
+
     public function addFolder(Folder $folder) {
         array_push($this->_props['folders'], $folder);
     }
@@ -59,6 +78,10 @@ class Customer implements \JsonSerializable
 
     public function addAssociatedFiles($name, $givenName, $path = null, $downloadUrl = null) {
          array_push($this->_props['associatedFiles'], ['name' => $name,'givenName' => $givenName, 'path' => $path, 'downloadUrl' => $downloadUrl]);
+    }
+
+    public function addTickets($ticketsArray) {
+        $this->_props['tickets'] = array_merge($this->_props['tickets'], $ticketsArray);
     }
 
     
@@ -75,7 +98,7 @@ class Customer implements \JsonSerializable
         foreach ($serializableProperties as $property => $val) {
             if (is_a($val, "\DateTime")) {
                 $serializableProperties[$property] = $val->format(\DateTime::RFC3339);
-            }else if (strcmp($property, 'folders') == 0 || strcmp($property,'extranetFolders') == 0) {
+            }else if (strcmp($property, 'folders') == 0 || strcmp($property,'extranetFolders') == 0 || strcmp($property,'tickets') == 0) {
                 //Folders objects are stored under '_folders' vars so they can be treated as Folder instead of array when decoding json -> See __construct
                 $serializableProperties["_$property"] = $val;
                 $serializableProperties[$property] = null;
@@ -131,6 +154,13 @@ class Customer implements \JsonSerializable
     public function getAssociatedFiles() {
         if (isset($this->_props["associatedFiles"]) && count($this->_props["associatedFiles"]) > 0) {
             return $this->_props["associatedFiles"];
+        } else return null;
+    }
+
+    public function getCode()
+    {
+        if (array_key_exists("code", $this->_props)) {
+            return $this->_props["code"];
         } else return null;
     }
 }

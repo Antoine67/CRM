@@ -9,6 +9,8 @@ use Storage;
 use Session;
 use Carbon\Carbon;
 use App\Customer;
+use DB;
+use App\Utils;
 
 class CustomerController extends Controller
 {
@@ -24,6 +26,9 @@ class CustomerController extends Controller
 
         return view('customer')->with('customer',$customer);
     }
+
+
+
 
     private function fillFolders($customer, $dataFolder, $isExtranetFolder, $graph) {
         foreach($dataFolder as $folder) {
@@ -139,15 +144,21 @@ class CustomerController extends Controller
 
         //Create new customer and fill props
         $customer = new Customer([
-                                    'id' => $id, 'name' => $mainFolderName ,
+                                    'id' => $id,
+                                    'name' => $mainFolderName ,
                                     'extranetId' => $extranetFolderId,
                                     'mainFolderWebUrl' => $mainFolderWebUrl,
                                     'extranetFolderWebUrl' => $extranetFolderWebUrl,
                                     'lastUpdatedProfile' => Carbon::now('Europe/Paris')->toDateTimeString(),
                                  ]);
 
+        //Sharepoint - Add folders 
         $this->fillFolders($customer, $dataClientFolder['value'], false, $graph);
         $this->fillFolders($customer, $dataExtranetFolder['value'], true, $graph);
+
+        //EasyVista - Add tickets infos
+        $this->addTickets($customer);
+
         Storage::put('customers/customer-'.$customer->getId().'.json', json_encode($customer));
 
         return $customer;
@@ -158,10 +169,38 @@ class CustomerController extends Controller
     ***/
     public function getAll(Request $request)  {
 
+        /*
+        if(Storage::exists('customers-database.json') && Storage::exists('customers.conf')) {
+        $customersDecoded = json_decode(Storage::get('customers-database.json'), true);
+        $conf = json_decode(Storage::get('customers.conf'), true);
+
+        $customers = array();
+        foreach($customersDecoded as $cus) {
+            array_push($customers, new Customer($cus));
+        }
+
+        $lastUpdate = null;
+        if(isset($conf["lastCustomersUpdate"])) {
+            $lastUpdate = Carbon::create($conf["lastCustomersUpdate"])->format('d/m/Y à H:i');
+        }
+
+        return view("customers")
+            ->with('customers',$customers)
+            ->with('lastUpdate', $lastUpdate);
+        }else {
+            return view("customers")
+            ->with ('msgError','Issue with sharepoint customer file : missing or not found. Try refreshing data, or check with your administrator');
+        }*/
+
       
       if(Storage::exists('sharepoint-clients.json') && Storage::exists('customers.conf')) {
-        $customers = json_decode(Storage::get('sharepoint-clients.json'), true);
+        $customersDecoded = json_decode(Storage::get('sharepoint-clients.json'), true);
         $conf = json_decode(Storage::get('customers.conf'), true);
+
+        $customers = array();
+        foreach($customersDecoded as $cus) {
+            array_push($customers, new Customer($cus));
+        }
 
         $lastUpdate = null;
         if(isset($conf["lastCustomersUpdate"])) {
@@ -176,6 +215,61 @@ class CustomerController extends Controller
            ->with ('msgError','Issue with sharepoint customer file : missing or not found. Try refreshing data, or check with your administrator');
       }
       
+    }
+
+    private function addTickets($customer) {
+
+        //Remove all unwanted chars
+        $normalizedName = Utils::normalizeName($customer->getName());
+        $continue = true;
+        
+        //Parse through easyvista local file and look for corresponding "CUSTOMER" and "411CUSTOMER" file
+        while($continue) {
+            
+            $path = null;
+            if(Storage::exists("easyvista/411$normalizedName")) {
+                $path = "easyvista/411$normalizedName";
+            }else if (Storage::exists("easyvista/$normalizedName")) {
+                $path = "easyvista/$normalizedName";
+            }else {
+                //No (more) file found, abort
+                $continue = false;
+                break;
+            }
+
+            $evFile = json_decode(Storage::get($path), true);
+            $id = $evFile['id'];
+
+
+            /* To see query : DB::connection('easyvista')->enableQueryLog();  dd(DB::connection('easyvista')->getQueryLog());
+            ------
+            select [COMMENT], [DESCRIPTION] from [EVO_DATA50005].[50005].[SD_REQUEST]
+            inner join [50005].[AM_DEPARTMENT] on [50005].[AM_DEPARTMENT].[DEPARTMENT_ID] = [50005].[SD_REQUEST].[DEPARTMENT_ID]
+            where [SUBMIT_DATE_UT] > ? and [50005].[SD_REQUEST].[DEPARTMENT_ID] = ? and ([DESCRIPTION] is not null or [COMMENT] is not null)
+            ------
+            */
+            $tickets = DB::connection('easyvista')
+                        ->table('EVO_DATA50005.50005.SD_REQUEST')
+                        ->join('50005.AM_DEPARTMENT', '50005.AM_DEPARTMENT.DEPARTMENT_ID', '=', '50005.SD_REQUEST.DEPARTMENT_ID')
+                        ->select(array('COMMENT','DESCRIPTION','PROJECT_NAME', 'RFC_NUMBER', 'AM_DEPARTMENT.LAST_UPDATE'))
+                        //->where('CREATION_DATE_UT', '>', Carbon::now('Europe/Paris')->subYears(1))
+                        ->where('50005.SD_REQUEST.DEPARTMENT_ID', '=', $id)
+                        ->where(function ($query) {
+                            $query->whereNotNull('DESCRIPTION')
+                                  ->orWhereNotNull('COMMENT');
+                        })
+                        ->orderBy('LAST_UPDATE', 'asc')
+                        ->take(100)
+                        ->get()
+                        ->toArray();
+            //dd($tickets[0]->COMMENT);
+            if(!empty($tickets)) {
+                $customer->addTickets($tickets);
+            }
+            
+
+            $normalizedName .= '_';
+        }
     }
 
 }
