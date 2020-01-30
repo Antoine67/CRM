@@ -44,56 +44,83 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                    @if(Session::has('user') && Session::has('access_token'))
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('customer') }}">{{ __('Clients') }}</a>
-                        </li>
+                        @auth
                         <li class="nav-item">
                             <a class="nav-link" href="https://www.office.com/">{{ __('Office') }}</a>
                         </li>
-                    @endif
+                        @if (Auth::user()->permission_level >= env('USER_LEVEL', 1))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('customer') }}">{{ __('Clients') }}</a>
+                        </li>
+                        @endif
+
+                        @endauth
                     </ul>
+
+                    
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @if(!Session::has('user') || !Session::has('access_token'))
+                    @guest
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">{{ __('Connexion') }}</a>
+                        </li>
+                    @if (Route::has('register'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url('login') }}">{{ __('Connexion') }}</a>
+                                <a class="nav-link" href="{{ route('register') }}">{{ __('Inscription') }}</a>
                             </li>
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="{{url('profile') }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Session::get('user')->getDisplayName() }} <span class="caret"></span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ url('profile') }}">
-                                        {{ __('Profil') }}
-                                    </a>
-                                @if(Session::has('permission_level') && Session::get('permission_level') >= env('EDITOR_LEVEL', 2))
-                                    <a class="dropdown-item" href="{{ url('sharepoint') }}">
-                                        {{ __('Config Sharepoint') }}
-                                    </a>
-                                @endif
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Déconnexion') }}
-                                    </a>
+                    @endif
+                    @else
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                {{ Auth::user()->name }} <span class="caret"></span>
+                            </a>
 
-                                    <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endif
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ url('profile') }}">
+                                    {{ __('Profil') }}
+                                </a>
+                                <div class="dropdown-divider"></div>
+
+                                @if(Auth::user()->permission_level >= env('EDITOR_LEVEL', 2))
+                                <a class="dropdown-item" href="{{ url('editor-mode') }}" onclick="event.preventDefault(); document.getElementById('editor-form').submit();">
+                                    @if(Auth::user()->editor_mode == true)
+                                    {{ __('Désactiver mode éditeur') }}
+                                    @else
+                                    {{ __('Activer mode éditeur') }}
+                                    @endif
+                                </a>
+                                @endif
+                                
+
+                                <a class="dropdown-item" href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                                    {{ __('Déconnexion') }}
+                                </a>
+
+                                <form id="editor-form" action="{{ url('editor-mode') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                                <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </div>
+                        </li>
+                    @endguest
                     </ul>
                 </div>
             </div>
         </nav>
 
         {{-- Display success/error messages via passed GET vars or directly via $msgError or $successMEssage vars --}}
+        @auth
+        @if(Auth::user()->editor_mode == true && Auth::user() >= env('EDITOR_LEVEL', 2))
+        <div class="alert alert-info" style="margin:7px 2px -7px 2px">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            Vous êtes actuellement en mode éditeur, cliquez <a href="{{ url('editor-mode') }}" onclick="event.preventDefault(); document.getElementById('editor-form').submit();">ici</a> pour revenir à la vue classique
+        </div>
+        @endif
+        @endauth
+
 
         @if(Session::has('successMessage') || isset($successMessage)) 
           <div class="alert alert-success alert-dismissible" style="margin:7px 2px -7px 2px">
@@ -120,6 +147,8 @@
           </div>
           <?php \Session::forget('msgError'); ?>
         @endif
+
+        
 
         <main class="py-4">
             @yield('content')

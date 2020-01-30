@@ -28,42 +28,43 @@
                             @else
                             <img src="{{ asset('img/default.jpg') }}" style="width:40%" alt="Logo"/>
                             @endisset
-                            <!--
+                            
                             <div class="file btn btn-lg btn-primary">
-                                Change Photo
+                                Modifier...
                                 <input type="file" name="file"/>
                             </div>
-                            -->
+                            
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="profile-head">
                                     <h3>
-                                        {{ $user->getDisplayName() }}
+                                        {{ $user->name }}
                                     </h3>
                                     
                                     <form id="update-customer-form"  method="POST" style="display: none;">
                                          @csrf
                                     </form>
-                                    <p class="proile-rating">Information supp</p>
+                                    @if($user->email_verified_at !== null)
+                                    <p class="proile-rating">Email vérifiée</p>
+                                    @endif
                         </div>
                     </div>
-                    <!--
+                    
                     <div class="col-md-2">
-                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Editer"/>
                     </div>
-                    -->
+                    
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="profile-work">
                             <hr/>
                             <p>Général</p>
-                            <a>{{ $user->getJobTitle() }}</a><br/>
                             <a>
-                            @switch(Session::get('permission_level'))
+                            @switch($user->permission_level)
                             @case(0)
-                                Utilisateur non ACESI
+                                Utilisateur
                                 @break
                             @case(1)
                                 Utilisateur ACESI
@@ -79,30 +80,14 @@
                             </a>
                             
                             <p>Contact</p>
-                            @if($user->getMobilePhone() !== null)
-                            <a>{{ $user->getMobilePhone() }}</a><br/>
-                            @endif
-                            @if($user->getMail() !== null)
-                            <a>{{ $user->getMail() }}</a><br/>
-                            @endif
-                            @if($user->getOfficeLocation() !== null)
-                            <a>{{ $user->getOfficeLocation() }}</a><br/>
-                            @endif
+                            <a>{{ $user->email }}</a>
+
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <h4>Liens utiles</h4>
-                        <a href="{{ $sharepointRoot['webUrl'] }}">Sharepoint</a><br/>
-                        <a href="http://mail.netintra.local/EmployeeDirectory.html">Annuaire interne</a><br/>
+                        <h4>TODO</h4>
+                        <p>TODO!</p>
                         <hr/>
-
-                        <h4>Recommandations et dernières consultations</h4>
-                        @foreach ($trending as $tr)
-                        <a href="{{ $tr['resourceReference']['webUrl'] }}">
-                            {{ $tr['resourceVisualization']['title'] }}
-                        </a>
-                        <br/>
-                        @endforeach
                     </div>
                 </div>
             </form>           
@@ -112,23 +97,6 @@
                     
                     
 @endsection
-<!--
-    <div>
-        <h3 class="d-inline-block">Profil - {{ $user->getDisplayName() }}</h3>
-    </div>
-   
-    <div class="card">
-        <div class="card-body">            
-            <div class="row justify-content-center">
-                <div class="w-100">
-                    {{ $user->getMail() }}
-                    {{ $user->getJobTitle() }}
-                    {{ $sharepointRoot['webUrl'] }}
-                </div>
-            </div>
 
-        </div>
-    </div>
-    -->
 
 

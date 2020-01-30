@@ -59,9 +59,9 @@ class Ticket  implements \JsonSerializable
         } else return null;
     }
 
-    public function getLastUpdate() {
-        if (array_key_exists("LAST_UPDATE", $this->_props)) {
-            return Carbon::create($this->_props["LAST_UPDATE"])->format('d/m/Y à H:i');
+    public function getCreationDate() {
+        if (array_key_exists("CREATION_DATE_UT", $this->_props)) {
+            return Carbon::create($this->_props["CREATION_DATE_UT"])->format('d/m/Y à H:i');
         } else return null;
     }
 

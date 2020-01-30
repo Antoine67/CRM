@@ -251,15 +251,15 @@ class CustomerController extends Controller
             $tickets = DB::connection('easyvista')
                         ->table('EVO_DATA50005.50005.SD_REQUEST')
                         ->join('50005.AM_DEPARTMENT', '50005.AM_DEPARTMENT.DEPARTMENT_ID', '=', '50005.SD_REQUEST.DEPARTMENT_ID')
-                        ->select(array('COMMENT','DESCRIPTION','PROJECT_NAME', 'RFC_NUMBER', 'AM_DEPARTMENT.LAST_UPDATE'))
+                        ->select(array('COMMENT','DESCRIPTION','PROJECT_NAME', 'RFC_NUMBER', 'SD_REQUEST.CREATION_DATE_UT'))
                         //->where('CREATION_DATE_UT', '>', Carbon::now('Europe/Paris')->subYears(1))
                         ->where('50005.SD_REQUEST.DEPARTMENT_ID', '=', $id)
                         ->where(function ($query) {
                             $query->whereNotNull('DESCRIPTION')
                                   ->orWhereNotNull('COMMENT');
                         })
-                        ->orderBy('LAST_UPDATE', 'asc')
-                        ->take(100)
+                        ->orderBy('CREATION_DATE_UT', 'desc')
+                        ->take(20)
                         ->get()
                         ->toArray();
             //dd($tickets[0]->COMMENT);

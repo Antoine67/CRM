@@ -196,6 +196,7 @@
                                         <div id="collapseDiv3" class="collapse shadow-sm show">
                                             <div class="card">
                                                 <div class="card-body">
+                                                    <h5>20 derniers Tickets : </h5>
                                                     <div class="container">
                                                         <div class="row">
                                                         @if ($customer->getArray('tickets') !== null)
@@ -206,8 +207,8 @@
                                                                 <a data-toggle="collapse" class="collapsed panel-title" data-parent="#accordion" href="#collapse{{ $ticket->get('RFC_NUMBER') }}" aria-expanded="true" aria-controls="collaps{{ $ticket->get('RFC_NUMBER') }}">
                                                                     <div class="panel-heading" role="tab" id="heading{{ $ticket->get('RFC_NUMBER') }}">
                                                                         Ticket n° <b>{{ $ticket->get('RFC_NUMBER') }}</b>
-                                                                        @if($ticket->getLastUpdate() !== null)
-                                                                            (modifié le {{ $ticket->getLastUpdate() }})
+                                                                        @if($ticket->getCreationDate() !== null)
+                                                                            (modifié le {{ $ticket->getCreationDate() }})
                                                                         @endif
                                                                     </div>
                                                                      </a>

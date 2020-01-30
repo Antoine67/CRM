@@ -6,7 +6,7 @@ use Closure;
 use Session;
 use Auth;
 
-class UserLevelMiddleware
+class LoginMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,10 @@ class UserLevelMiddleware
      */
     public function handle($request, Closure $next)
     {
-	if(!Auth::check() || Auth::user()->permission_level < 2) {
-		 return redirect('/');
-	}
-           
+	if(!Auth::check()) {
+            return redirect('/login');
+        }
+
         return $next($request);
     }
 }

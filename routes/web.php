@@ -11,19 +11,16 @@
 |
 */
 
+Auth::routes();
 
-Route::get('/signin', 'AuthController@signin');
-Route::get('/authorize', 'AuthController@gettoken');
-
-Route::get('/login', 'LoginController@get');
-Route::post('/login','LoginController@fullLogout');
+Route::get('/home', 'WelcomeController@get');
 
 Route::group(['middleware' => 'use.ssl'], function () {
     //SSL pages there - certs have to be setup
 });
 
-//Routes which need to be logged in with a microsoft account and have an ACESI, editor, or admin account
-Route::group(['middleware' => ['need.microsoft','user.level'] ], function () {
+//Routes which need to be logged in and have an editor, or admin account
+Route::group(['middleware' => ['need.login','user.level'] ], function () {
 
     Route::get('/sharepoint', 'SharepointController@get');
     Route::post('/sharepoint', 'SharepointController@post');
@@ -31,18 +28,17 @@ Route::group(['middleware' => ['need.microsoft','user.level'] ], function () {
     Route::get('/customer/{id}', 'CustomerController@getById');
     Route::post('/customer/{id}', 'CustomerController@updateById');
     Route::get('/customer', 'CustomerController@getAll');
+    Route::post('/editor-mode', 'EditorController@post');
 
 
 
    
 });
 
-//Routes which need to be logged in with a microsoft account
-Route::group(['middleware' => 'need.microsoft' ], function () {
+//Routes which need to be logged in without any particular permissions
+Route::group(['middleware' => 'need.login' ], function () {
     Route::get('/', 'WelcomeController@get');
-
     Route::get('/profile', 'ProfileController@get');
-    Route::post('/logout', 'ProfileController@logout');
 });
 
 

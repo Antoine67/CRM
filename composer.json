@@ -13,9 +13,10 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
+        "laravel/ui": "^1.1",
         "league/oauth2-client": "^2.0",
-        "vgrem/php-spo": "^2.3",
-	"microsoft/microsoft-graph": "1.0.*"
+        "microsoft/microsoft-graph": "1.0.*",
+        "vgrem/php-spo": "^2.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
