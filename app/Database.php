@@ -3,13 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class Customer extends Model
+class Database extends Model
 {
-    protected $table = 'customers';
+
+    protected $table = 'databases';
     protected $primaryKey = 'id';
-    public $timestamps = true;
+    public $timestamps = false;
 
     public $connected = false;
     /**
@@ -18,7 +18,7 @@ class Customer extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'phone', 'created_at', 'updated_at',
+        'password', 'username', 'port', 'host', 'name', 'driver',
     ];
 
     /**
@@ -38,4 +38,5 @@ class Customer extends Model
     protected $casts = [
        
     ];
+
 }

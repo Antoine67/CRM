@@ -23,20 +23,8 @@
     <div>
         <h1 class="d-inline-block">Clients </h1>
     </div>
-    @if(Session::has('permission_level') && Session::get('permission_level') >= env('EDITOR_LEVEL', 2))
-    <a href="#" onclick="event.preventDefault(); document.getElementById('refresh-customer-form').submit();"> {{ __('Mettre à jour la liste de clients') }} </a>
-    <p class="text-muted">
-        @isset($lastUpdate)
-        Dernière mise à jour le {{ $lastUpdate }}
-        @else
-        Aucune mise à jour récente trouvée
-        @endisset
-    </p>
-    <form id="refresh-customer-form" action="{{ url('sharepoint') }}" method="POST" style="display: none;">
-        @csrf
-        <input type="text" name="type" value="list"> </input>
-    </form>
-    @endif
+
+    
 
     <div class="card customers-container">
 
@@ -44,7 +32,10 @@
         @isset($customers)
 
             <table id="table_id" class="display" style="opacity: 0;">
-
+            <div style="text-align:center">
+                <button type="button" class="btn btn-success" style="width: max-content;">Nouveau client</button>
+            </div>
+            <hr/>
 			    <thead>
 				    <tr>
 					    <td class="text-center">Nom</td>
@@ -54,13 +45,13 @@
 		    <tbody>
             @foreach($customers as $customer)
 
-            <tr id="tr_{{ $customer->getId() }}">
+            <tr id="tr_{{ $customer->id }}">
             
-			    <td class="customer-name all" onClick='openUrlSameTab(" {{ url('customer') . '/' . $customer->getId() }} ")';><span name="">{{ $customer->getName() }}</span></td>
+			    <td class="customer-name all" onClick='openUrlSameTab(" {{ url('customer') . '/' . $customer->id }} ")';><span name="">{{ $customer->name }}</span></td>
             
             
 			    <td class="customer-logos desktop">
-                    @if(isset($customer->getProperties()['webUrl']))
+                    @if(isset($customer->webUrl))
                     <a href="#" onClick="openUrl('{{ $customer->getProperties()['webUrl'] }}');">
                         <span name=""><i class="fas fa-folder-open"></i></span>
                     </a>

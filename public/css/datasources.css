@@ -1,0 +1,17 @@
+#left-pane-db {
+    height:50%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto
+}
+
+#right-pane-db {
+
+}
+
+.db-item {
+    cursor: pointer;
+}

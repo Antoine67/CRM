@@ -15,9 +15,10 @@ class UserLevelMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $user_level)
     {
-	if(!Auth::check() || Auth::user()->permission_level < 2) {
+	if(!Auth::check() || Auth::user()->permission_level < $user_level) {
+         abort(404);
 		 return redirect('/');
 	}
            

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
 
@@ -40,10 +41,10 @@
                     <div class="col-md-6">
                         <div class="profile-head">
                                     <h3>
-                                        {{ $customer->getName() }}
+                                        {{ $customer->name }}
                                     </h3>
                                     <h6 class="text-muted">
-                                        Dernière mise à jour le {{ $customer->getLastUpdatedProfile() }}
+                                        Dernière mise à jour le {{ $customer->updated_at }}
                                     </h6>
                                     <h6>
                                         <a href="#" id="update-button" onclick="updateCustomer(event);">
@@ -81,20 +82,13 @@
                             <a>+33 6 15 48 XX XX</a><br/>
                             <a href="mailto:test@email.fr">test@email.fr</a><br/>
                             <p>Contact VITA</p>
-                            <a>
-                                Tél: 
-                                @if($customer->get('E_TEL_VITA') !== null)
-                                    {{ $customer->get('E_TEL_VITA') }}
-                                @else
-                                    Non renseigné
-                                @endif
-                            </a><br/>
+                           <br/>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="tab-content profile-tab" id="myTabContent">
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                        <div class="row">
+                                <div class="row">
                                     <div class="col-md-6">
                                         <label>Info 1</label>
                                     </div>
@@ -138,51 +132,7 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <!-- Files -->
-                                                    <h5>Fichiers :</h5>
-                                                    @if($customer->getAssociatedFiles() !== null)
-                                                    @foreach($customer->getAssociatedFiles() as $file)
-                                                    <div class="align-middle d-inline-block" onClick="openUrl(' {{ $file['path'] }} ')">
-                                    
-                                                        <div class="form-group">
-                                                            <input type="checkbox" name="fancy-checkbox-success" id="fancy-checkbox-success" autocomplete="off" checked="true" disabled />
-                                                            <div class="btn-group">
-                                                                <label for="fancy-checkbox-success" class="btn btn-success">
-                                                                    <span class="fas fa-file"></span>
-                                                                    <span> </span>
-                                                                </label>
-                                                                <label for="fancy-checkbox-success" class="btn btn-default active">
-                                                                    {{ $file['givenName'] }}
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                    
-                                                    </div>
-                                                    @endforeach
-                                                    @else
-                                                    <p>Aucun fichier trouvé</p>
-                                                    @endif
-
-
-                                                    <!-- SharePoint folders -->
-                                                    <h5>Dossiers SharePoint :</h5>
-                                                    <h6 class="text-muted"><a href="#" onClick="openUrl('{{ $customer->getProperties()['mainFolderWebUrl'] }}')">Dossier client</a></h6>
-                                                    <ul class="fa-ul">
-                                                    @foreach($customer->getFolders() as $folder)
-                                                        <li><a href="#" onClick="openUrl('{{ $folder->getWebUrl() }}')">
-                                                            <span class="fa-li"><i class="fas fa-folder"></i></span>
-                                                            {{ $folder->getName() }} - <i>{{ $folder->getChildCount() }} fichier(s)</i>
-                                                        </a></li>
-                                                    @endforeach
-                                                    </ul>
-                                                    <h6 class="text-muted"><a href="#" onClick="openUrl('{{ $customer->getProperties()['extranetFolderWebUrl'] }}');">Dossier extranet</a></h6>
-                                                    <ul class="fa-ul">
-                                                    @foreach($customer->getExtranetFolders() as $folder)
-                                                        <li><a href="#" onClick="openUrl('{{ $folder->getWebUrl() }}')">
-                                                            <span class="fa-li"><i class="fas fa-folder"></i></span>
-                                                            {{ $folder->getName() }} - <i>{{ $folder->getChildCount() }} fichier(s)</i>
-                                                        </a></li>
-                                                    @endforeach
-                                                    </ul>
+                                                    @include('customer.files') 
                                                 </div>
                                             </div>
                                         </div>
@@ -196,38 +146,10 @@
                                         <div id="collapseDiv3" class="collapse shadow-sm show">
                                             <div class="card">
                                                 <div class="card-body">
-                                                    <h5>20 derniers Tickets : </h5>
+                                                    <!-- Tickets -->
                                                     <div class="container">
                                                         <div class="row">
-                                                        @if ($customer->getArray('tickets') !== null)
-                                                            
-                                                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
-                                                            @foreach ($customer->getArray('tickets') as $ticket)
-                                                                <div class="panel panel-default ">
-                                                                <a data-toggle="collapse" class="collapsed panel-title" data-parent="#accordion" href="#collapse{{ $ticket->get('RFC_NUMBER') }}" aria-expanded="true" aria-controls="collaps{{ $ticket->get('RFC_NUMBER') }}">
-                                                                    <div class="panel-heading" role="tab" id="heading{{ $ticket->get('RFC_NUMBER') }}">
-                                                                        Ticket n° <b>{{ $ticket->get('RFC_NUMBER') }}</b>
-                                                                        @if($ticket->getCreationDate() !== null)
-                                                                            (modifié le {{ $ticket->getCreationDate() }})
-                                                                        @endif
-                                                                    </div>
-                                                                     </a>
-                                                                    <div id="collapse{{ $ticket->get('RFC_NUMBER') }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                                                                        <hr/>
-                                                                        <div class="panel-body" style="padding: 5px;">
-                                                                            <!-- Remove HTML tags -->
-                                                                            {{ strip_tags(htmlspecialchars_decode($ticket->get('COMMENT'))) }}
-                                                                        </div>
-                                                                        <hr/>
-                                                                    </div>
-                                                                </div>
-                                                             @endforeach
-                                                                
-                                                            </div>
-                                                        
-                                                        @else
-                                                        <p class="font-italic mb-0 text-muted">Aucun ticket trouvé</p>
-                                                        @endif
+                                                            @include('customer.tickets') 
                                                         </div>
                                                     </div>
                                                 </div>

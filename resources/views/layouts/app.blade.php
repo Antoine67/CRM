@@ -45,14 +45,15 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://www.office.com/">{{ __('Office') }}</a>
-                        </li>
                         @if (Auth::user()->permission_level >= env('USER_LEVEL', 1))
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('customer') }}">{{ __('Clients') }}</a>
                         </li>
                         @endif
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://www.office.com/">{{ __('Office') }}</a>
+                        </li>
 
                         @endauth
                     </ul>
@@ -91,6 +92,10 @@
                                     @endif
                                 </a>
                                 @endif
+
+                                @admin
+                                <a class="dropdown-item" href="{{ url('datasources') }}">{{ __('Sources de données') }}</a>
+                                @endadmin
                                 
 
                                 <a class="dropdown-item" href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
@@ -112,14 +117,12 @@
         </nav>
 
         {{-- Display success/error messages via passed GET vars or directly via $msgError or $successMEssage vars --}}
-        @auth
-        @if(Auth::user()->editor_mode == true && Auth::user() >= env('EDITOR_LEVEL', 2))
+        @editor
         <div class="alert alert-info" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             Vous êtes actuellement en mode éditeur, cliquez <a href="{{ url('editor-mode') }}" onclick="event.preventDefault(); document.getElementById('editor-form').submit();">ici</a> pour revenir à la vue classique
         </div>
-        @endif
-        @endauth
+        @endeditor
 
 
         @if(Session::has('successMessage') || isset($successMessage)) 
