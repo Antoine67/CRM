@@ -67,11 +67,11 @@ class AdminController extends Controller
             "password" =>  $this->ifNotNull( $db['password'],''),
             "driver" =>  $this->ifNotNull( $db['driver'],''),
         ]);
-
+        
         try {
             $con = DB::connection('testConnection')->getPdo();
         } catch (\Exception $e) {
-            return ("Could not connect to the database." );
+            return ("Could not connect to the database");
         }
         return null;
     }

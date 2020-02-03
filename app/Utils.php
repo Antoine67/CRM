@@ -13,6 +13,13 @@ class Utils
          $output = str_replace('`', '', $output);
         $output = strtolower($output);
         return $output;
-  }
+    }
+
+    public static function ifNotNull($val, $def) {
+		if(!isset($val)) {
+			return $def;
+		}
+		return $val;
+	}
 
 }

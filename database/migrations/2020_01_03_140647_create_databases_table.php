@@ -16,11 +16,11 @@ class CreateDatabasesTable extends Migration
         Schema::create('databases', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('password')->default('');
-	    $table->string('username')->default('');
-	    $table->string('port')->default('');
-	    $table->string('host')->default('');
-	    $table->string('name')->default('DATABASE_NAME');
-	    $table->string('driver')->default('sqlsrv');
+	        $table->string('username')->default('');
+	        $table->string('port')->default('');
+	        $table->string('host')->default('');
+	        $table->string('name')->default('DATABASE_NAME');
+	        $table->string('driver')->default('sqlsrv');
 
         });
     }

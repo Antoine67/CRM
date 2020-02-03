@@ -3,22 +3,21 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class Customer extends Model
+class File extends Model
 {
-    protected $table = 'customers';
+    
+    protected $table = 'files';
     protected $primaryKey = 'id';
-    public $timestamps = true;
+    public $timestamps = false;
 
-    public $connected = false;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'phone', 'created_at', 'updated_at',
+        //TODO
     ];
 
     /**
@@ -39,13 +38,4 @@ class Customer extends Model
        
     ];
 
-    public function datasources()
-    {
-        return $this->hasMany('App\Datasource', 'id_customer', 'id');
-    }
-
-    public function tickets()
-    {
-        return $this->hasMany('App\Ticket', 'id_customer', 'id');
-    }
 }

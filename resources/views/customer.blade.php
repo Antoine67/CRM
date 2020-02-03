@@ -19,8 +19,10 @@
 
     <a href="{{ url('customer') }}" class="btn btn-light"><i class="fas fa-arrow-left" style="margin-right:7px;"></i>Retour à la liste des clients</a>
 
+    @editor
+    @include('customer.datasourceSelect', ['databases' => $databases, 'tables' => $tables])
+    @endeditor
 
-    </div>
     <div id="customer-displayer" class="tab-content">   
 
 
