@@ -3,14 +3,14 @@
     "",
     "\\app",
     "\\app\\Http",
-    "\\public",
-    "\\public\\css",
+    "\\app\\Http\\Controllers",
     "\\resources",
     "\\resources\\views",
+    "\\resources\\views\\admin",
     "\\resources\\views\\auth",
     "\\resources\\views\\layouts",
     "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\welcome.blade.php",
+  "SelectedNode": "\\app\\Http\\Controllers\\WelcomeController.php",
   "PreviewInSolutionExplorer": false
 }

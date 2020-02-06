@@ -31,7 +31,11 @@
                 <div class="row">
                     <div class="col-md-4 rmv-resp">
                         <div class="profile-img">
+                            @if($customer->picture)
+                            <img src="{{ asset('storage/' . $customer->picture) }}" alt="Logo"/>
+                            @else
                             <img src="{{ asset('img/default.jpg') }}" alt="Logo"/>
+                            @endif
                             <!--
                             <div class="file btn btn-lg btn-primary">
                                 Change Photo
@@ -46,7 +50,7 @@
                                         {{ $customer->name }}
                                     </h3>
                                     <h6 class="text-muted">
-                                        Dernière mise à jour le {{ $customer->updated_at }}
+                                        Dernière mise à jour le {{ $customer->getLastUpdate() }}
                                     </h6>
                                     <h6>
                                         <a href="#" id="update-button" onclick="updateCustomer(event);">
@@ -68,11 +72,11 @@
                             </ul>
                         </div>
                     </div>
-                    <!--
+                    @editor
                     <div class="col-md-2">
                         <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
                     </div>
-                    -->
+                    @endeditor
                 </div>
                 <div class="row">
                     <div class="col-md-4 rmv-resp">
@@ -81,9 +85,22 @@
                             <a>Info</a><br/>
                             
                             <p>Contact</p>
-                            <a>+33 6 15 48 XX XX</a><br/>
-                            <a href="mailto:test@email.fr">test@email.fr</a><br/>
-                            <p>Contact VITA</p>
+                            @if( $customer->phone)
+                            <a>{{ $customer->phone }}</a><br/>
+                            @endif
+                            @if( $customer->email)
+                            <a href="mailto:{{ $customer->email }}">{{ $customer->email }}</a><br/>
+                            @endif
+                            <p>Liens utiles</p>
+                            @if( $customer->web_url)
+                            <a href="{{ $customer->web_url }}">Site web</a><br/>
+                            @endif
+                             @if( $customer->sharepoint_client)
+                            <a href="{{ $customer->sharepoint_client }}">Dossier client</a><br/>
+                            @endif
+                             @if( $customer->sharepoint_extranet)
+                            <a href="{{ $customer->sharepoint_extranet }}">Dossier extranet</a><br/>
+                            @endif
                            <br/>
                         </div>
                     </div>

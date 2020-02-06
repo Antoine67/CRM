@@ -41,5 +41,8 @@ class Datasource extends Model
     public function database()
     {
         return $this->hasOne('App\Database', 'id', 'id_database');
+        /*print_r("ID : ". $this->id_database);
+        return \App\Database::first()->where('id', '=', $this->id_database);*/
+        
     }
 }

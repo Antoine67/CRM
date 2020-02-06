@@ -33,7 +33,7 @@
 
             <table id="table_id" class="display" style="opacity: 0;">
             <div style="text-align:center">
-                <button type="button" class="btn btn-success" style="width: max-content;">Nouveau client</button>
+                <a href="{{ url('creation') }}" class="btn btn-success" style="width: max-content;">Nouveau client</a>
             </div>
             <hr/>
 			    <thead>
@@ -51,9 +51,19 @@
             
             
 			    <td class="customer-logos desktop">
-                    @if(isset($customer->webUrl))
-                    <a href="#" onClick="openUrl('{{ $customer->getProperties()['webUrl'] }}');">
-                        <span name=""><i class="fas fa-folder-open"></i></span>
+                    @if(isset($customer->sharepoint_client))
+                    <a href="#" onClick="openUrl('{{ $customer->sharepoint_client }}');">
+                        <span name=""><i class="fas fa-lg fa-folder-open"></i></span>
+                    </a>
+                    @endif
+                    @if(isset($customer->sharepoint_extranet))
+                    <a href="#" onClick="openUrl('{{ $customer->sharepoint_extranet }}');">
+                        <span name=""><i class="fas fa-lg fa-file-alt"></i></span>
+                    </a>
+                    @endif
+                     @if(isset($customer->web_url))
+                    <a href="#" onClick="openUrl('{{ $customer->web_url }}');">
+                        <span name=""><i class="fas fa-lg fa-globe"></i></span>
                     </a>
                     @endif
                 </td>

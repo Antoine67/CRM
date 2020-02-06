@@ -137,11 +137,11 @@
             @endif
           </div>
           <?php \Session::forget('successMessage'); ?>
-        @elseif (Request::get('msgError') || isset($msgError))
+        @elseif (Session::has('msgError') || isset($msgError))
           <div class="alert alert-danger alert-dismissible" style="margin:7px 2px -7px 2px">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            @if (Request::get('msgError') !== null)
-                {{ Request::get('msgError') }}
+            @if (Session::has('msgError') !== null)
+                {{ Session::get('msgError') }}
             @else
                 @isset ($msgError)
                     {{ $msgError }}

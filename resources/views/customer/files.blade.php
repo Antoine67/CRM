@@ -1,6 +1,15 @@
-
 @editor
-@include('customer.buttonDatasourceSelect', ['table_name' => 'files']) 
+<?php
+$query = "";
+if( isset ($datasources) ) {
+    foreach ($datasources as $d) {
+        if( strcmp($d->table_associated, 'files') == 0 ) {
+            $query = $d->query;
+        }
+    }
+}
+?>
+@include('customer.buttonDatasourceSelect', ['table_name' => 'files',  'query' => $query]) 
 @endeditor
 
 <!-- Files -->
@@ -26,7 +35,7 @@
 </div>
 @endforeach
 @else
-<p>Aucun fichier trouvé</p>
+<p class="font-italic mb-0 text-muted">Aucun fichier trouvé</p>
 @endif
 
 @if (false)

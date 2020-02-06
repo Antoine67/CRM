@@ -1,13 +1,13 @@
 
 var db;
 var id;
-var type = 0; //0 = edit, 1 = new
+var id_datasource = 0; //0 = new, else = edit
 
 
 $(function () {
     $(".db-item").click(function () {
         $('#msg-displayer').hide();
-        type = 0;
+        id_datasource = $(this).find('span').attr('id').slice(0, '-' + '-state'.length );
         id = $(this).attr('id').substring("db-item-".length);
 
         databases.forEach((item, index) => {
@@ -54,7 +54,12 @@ function testConnection() {
             'db': db_props,
         },
         success: function (data, statut) {
-            $('#msg-txt').text(data['msg']);
+            if (data.msg) {
+                $('#msg-txt').text(data.msg);
+            } else {
+                $('#msg-txt').text('Succès');
+            }
+            
             $('#msg-displayer').removeClass();
             $('#msg-displayer').addClass("alert alert-success fade show");
             $('#msg-displayer').show();
@@ -65,7 +70,12 @@ function testConnection() {
         },
 
         error: function (data, statut, xhr) {
-            $('#msg-txt').text(data.responseJSON.msg);
+            if(data.responseJSON.msg) {
+                $('#msg-txt').text(data.responseJSON.msg);
+            } else {
+                $('#msg-txt').text('Erreur inconnue');
+            }
+            
             $('#msg-displayer').removeClass();
             $('#msg-displayer').addClass("alert alert-danger fade show");
             $('#msg-displayer').show();
@@ -73,6 +83,7 @@ function testConnection() {
             $('#' + id + '-state').removeClass();
             $('#' + id + '-state').addClass('badge badge-danger badge-pill');
             $('#' + id + '-state').text('Non connecté');
+            console.log(data);
         },
 
         complete: function (data) {
@@ -97,7 +108,7 @@ function save() {
         'driver': $('#dbDriver').val(),
     };
     let typeStr;
-    if (type > 0) { //0 = edit, 1 = new
+    if (id_datasource <= 0) { //0 = new, else = edit
         typeStr = "new";
     } else {
         typeStr = "edit";
@@ -111,9 +122,14 @@ function save() {
             '_token': $('meta[name=csrf-token]').attr('content'),
             'db_edit_create': db_props,
             'type': typeStr,
+            'id': id_datasource,
         },
         success: function (data, statut) {
-            $('#msg-txt').text(data['msg']);
+            if (data['msg']) {
+                $('#msg-txt').text(data['msg']);
+            } else {
+                $('#msg-txt').text("Succès");
+            }
             $('#msg-displayer').removeClass();
             $('#msg-displayer').addClass("alert alert-success fade show");
             $('#msg-displayer').show();
@@ -122,7 +138,11 @@ function save() {
         },
 
         error: function (data, statut, xhr) {
-            $('#msg-txt').text(data.responseJSON.msg);
+            if (data.responseJSON.msg) {
+                $('#msg-txt').text(data.responseJSON.msg);
+            } else {
+                $('#msg-txt').text("Echec : Erreur inconnue");
+            }
             $('#msg-displayer').removeClass();
             $('#msg-displayer').addClass("alert alert-danger fade show");
             $('#msg-displayer').show();
@@ -154,7 +174,7 @@ function checkForm() {
 }
 
 function addDatabase() {
-    type = 1;
+    id_datasource = 0;
     $('#msg-displayer').hide();
     $('#dbModalTitle').text("Nouvelle connexion");
     $('#dbName').val('');

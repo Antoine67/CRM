@@ -2,8 +2,10 @@ $(function() {
     //Hide collapsed div by default
 	let numberOfCollapseDiv = 4;
     for(let i=1; i<=numberOfCollapseDiv ; i++) {
-        $( '#collapseDiv' + i ).collapse();
+        $('#collapseDiv' + i).collapse();
     }
+
+    $('#msg-displayer').hide();
 
 });
 
@@ -21,7 +23,7 @@ function updateCustomer(event) {
             location.reload();
         },
         error: function (resultat, statut, xhr) {
-            alert(xhr);
+            location.reload();
         },
         complete: function () {
             $('#loading-gif-update').css("visibility", "hidden");
@@ -31,9 +33,12 @@ function updateCustomer(event) {
 }
 
 var tableAssociated;
-function openModal(table_name) {
+function openModal(table_name, el) {
+    $('#msg-displayer').hide();
+    let query = $(el).find(".query-text").text();
     table_name = table_name.replace(/\s/g, '');
     tableAssociated = table_name;
+    $('#queryTextArea').val(query);
 
     let table = datasources[table_name];
     $('#attributes-list').html('');
@@ -41,10 +46,10 @@ function openModal(table_name) {
         if (table[key].localeCompare("id") == 0) continue;
         $("#attributes-list").append("<li>"+ table[key] +"</li>");
     }
-    $('#queryTextArea').val('');
 }
 
 function saveDatasource() {
+    buttons(false);
     let databaseId = $('#databaseSelected').val();
     let query = $('#queryTextArea').val();
     var data = {
@@ -52,7 +57,6 @@ function saveDatasource() {
         'tableAssociated' : tableAssociated,
         'query' : query,
     };
-    console.log(data);
 
     $.ajax({
         type: 'POST',
@@ -61,17 +65,27 @@ function saveDatasource() {
             'datasource': data,
         },
         success: function (data, statut) {
-            console.log(data);
+            $('#msg-txt').text(data.msg);
+            $('#msg-displayer').removeClass();
+            $('#msg-displayer').addClass("alert alert-success fade show");
+            $('#msg-displayer').show();
         },
 
         error: function (data, statut, xhr) {
-            console.log(data);
+            $('#msg-txt').text(data.msg);
+            $('#msg-displayer').removeClass();
+            $('#msg-displayer').addClass("alert alert-danger fade show");
+            $('#msg-displayer').show();
         },
 
         complete: function (data) {
-            
+            buttons(true);
         }
     });
 
 
+}
+
+function buttons(bool) {
+    $('#datasourceModal').find(':button').prop('disabled', !bool); // Disable-Enable all the buttons
 }

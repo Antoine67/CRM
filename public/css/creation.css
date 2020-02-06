@@ -1,0 +1,36 @@
+#imageUpload {
+    display: none;
+}
+
+#profileImage {
+    cursor: pointer;
+    border: 1px dashed black;
+}
+
+#profileImage:hover {
+    border:1px dashed blue;
+}
+
+#profile-container {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+}
+
+#profile-container img {
+    width: 150px;
+    height: 150px;
+}
+
+
+button {
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #4287f5;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: inline-block;
+    border: none;
+    transition: all 0.4s ease 0s;
+}

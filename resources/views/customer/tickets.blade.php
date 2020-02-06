@@ -1,5 +1,15 @@
 @editor
-@include('customer.buttonDatasourceSelect', ['table_name' => 'tickets']) 
+<?php
+$query = "";
+if( isset ($datasources) ) {
+    foreach ($datasources as $d) {
+        if( strcmp($d->table_associated, 'tickets') == 0 ) {
+            $query = $d->query;
+        }
+    }
+}
+?>
+@include('customer.buttonDatasourceSelect', ['table_name' => 'tickets', 'query' => $query]) 
 @endeditor
 
 <h5>Derniers tickets : </h5>

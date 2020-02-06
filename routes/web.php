@@ -43,6 +43,9 @@ Route::group(['middleware' => ['need.login','user.level:'.$user]], function () {
     Route::get('/customer/{id}', 'CustomerController@getById');
     Route::post('/customer/{id}', 'CustomerController@updateById');
     Route::get('/customer', 'CustomerController@getAll');
+
+    Route::get('/creation', 'CreationController@get');
+    Route::post('/creation', 'CreationController@post');
     
 });
 

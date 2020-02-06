@@ -22,4 +22,11 @@ class Utils
 		return $val;
 	}
 
+    public static function strReplaceFirstOcc($from, $to, $content) {
+        $from = '/'.preg_quote($from, '/').'/';
+
+        return preg_replace($from, $to, $content, 1);
+    }
+
+
 }

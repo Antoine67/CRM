@@ -15,6 +15,7 @@ use DB;
 use App\Utils;
 use Auth;
 use Schema;
+use Artisan;
 
 class CustomerController extends Controller
 {
@@ -27,7 +28,7 @@ class CustomerController extends Controller
     }
 
 
-    $databases = null;  $tables = null;
+    $databases = null;  $tables = null; $datasources = null;
 
     //If user is logged as editor, and is in edit mode
     if(Auth::check() &&
@@ -36,6 +37,9 @@ class CustomerController extends Controller
     {
         $databases = Database::all();
         if($databases->isEmpty()) $databases = null;
+
+        $datasources = Datasource::where('id_customer', '=', $id)->get();
+         if($datasources->isEmpty()) $datasources = null;
 
         $tickets = Schema::getColumnListing('tickets');
         if(($key = array_search('id', $tickets)) !== false) unset($tickets[$key]);
@@ -47,11 +51,16 @@ class CustomerController extends Controller
         ];
     }
 
+
     $tickets = $customer->tickets()->get();
+    if($tickets->isEmpty()) $tickets = null;
+    
+
    
     return view('customer')
         ->with('customer',$customer)
         ->with('databases',$databases)
+        ->with('datasources',$datasources)
         //->with('files', $customer->files()->get())
         ->with('tickets', $tickets)
         ->with('tables',$tables);
@@ -70,33 +79,60 @@ class CustomerController extends Controller
 
 
     public function updateById($id, Request $request) {
+
+        //Update a datasource (database, query)
         if( $request->input('datasource') !== null ) {
-            Datasource::create([
+
+            $alreadyExist = Datasource::where('table_associated', '=', $request->input('datasource')['tableAssociated'] )->where('id_customer', '=', $id)->first();
+
+            if(!is_null($alreadyExist)) { // Need to update datasource
+                Datasource::where('table_associated', '=', $request->input('datasource')['tableAssociated'] )->where('id_customer', '=', $id)->first()->update([
+                    'query' => $request->input('datasource')['query'],
+                    'id_database' => $request->input('datasource')['databaseId'],
+                ]);
+
+                return response()->json([
+                    'msg' => 'Mise à jour réussie',
+                ], 200);
+            }else { // Need to create datasource
+                Datasource::create([
                 'table_associated' => $request->input('datasource')['tableAssociated'],
                 'query' => $request->input('datasource')['query'],
                 'id_database' => $request->input('datasource')['databaseId'],
                 'id_customer' => $id,
             ]);
-            return response('');
-        }else {
-             $customer = $this->updateOrCreateCustomer($id);
-            if($customer) {
-                Session::put('successMessage', "Mise à jour réussie");
-            }else {
-                Session::put('msgError', "Mise à jour échouée");
+                return response()->json([
+                    'msg' => 'Création réussie',
+                ], 200);
             }
-        
-            return response('');
+            
         }
 
+        //Update completely the current customer
+        else {
+             $error_code = $this->updateOrCreateCustomer($id);
+             $http;
+            if($error_code === 0) {
+                Session::put('successMessage', "Mise à jour réussie");
+                $http = 200;
 
-       
+            }else {
+                Session::put('msgError', "Mise à jour échouée. Code d'erreur : $error_code");
+                $http = 500;
+            }
+
+            return response()->json([
+                    'msg' => $error_code,
+                ], $http);
+        }  
     }
 
     public function updateOrCreateCustomer($id) {
     
-        
-        return "aa";
+        $exitCode = Artisan::call('create:customer', [
+           '--id' => $id
+        ]);
+        return $exitCode;
     }
 
 }

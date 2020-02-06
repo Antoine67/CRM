@@ -18,7 +18,7 @@ class Customer extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'phone', 'created_at', 'updated_at',
+        'name', 'email', 'phone', 'created_at', 'updated_at', 'picture', 'sharepoint_client', 'sharepoint_extranet', 'phone', 'web_url'
     ];
 
     /**
@@ -36,7 +36,7 @@ class Customer extends Model
      * @var array
      */
     protected $casts = [
-       
+
     ];
 
     public function datasources()
@@ -47,5 +47,9 @@ class Customer extends Model
     public function tickets()
     {
         return $this->hasMany('App\Ticket', 'id_customer', 'id');
+    }
+
+    public function getLastUpdate() {
+        return Carbon::create($this->updated_at->toDateTimeString(), 'Europe/Paris')->format('d/m/Y à H:i');
     }
 }

@@ -42,6 +42,7 @@ class AdminController extends Controller
                     ], 200);
                     break;
                 case 'edit' :
+                    Database::find($request->input('id'))->update($db_edit_create);
                     return response()->json([
                     'msg' => 'Successfully edited',
                 ], 200);

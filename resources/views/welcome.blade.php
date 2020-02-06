@@ -14,6 +14,9 @@
 
 @section('content')
 
+@isset($data)
+   {{ $data }}
+@endisset
 
     <div class="card">
         <div class="card-body">

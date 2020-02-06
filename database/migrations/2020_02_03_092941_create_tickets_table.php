@@ -17,7 +17,7 @@ class CreateTicketsTable extends Migration
             $table->bigIncrements('id');
             $table->string('number')->default('Undefined');
             $table->dateTime('date')->nullable();
-            $table->string('description')->default('No description');
+            $table->string('description',9999)->default('No description');
 
 
             $table->unsignedBigInteger('id_customer');

@@ -42,12 +42,15 @@
                 </ul>
             </div>
           </form>
-           @else
+          @else
                 <p>Aucune sources de données trouvée, veuillez en <a href="/datasources" >ajouter une</a>.</p>
-           @endif
+          @endif
+          <div class="alert alert-warning fade show" id="msg-displayer" role="alert">
+              <span id="msg-txt"></span>
+          </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
         <button type="button" class="btn btn-primary" onClick="saveDatasource()">Sauvegarder</button>
       </div>
     </div>

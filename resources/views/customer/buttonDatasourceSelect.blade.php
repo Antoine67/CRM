@@ -1,5 +1,6 @@
-<button class="btn edit-button" data-toggle="modal" data-target="#datasourceSelectModal" onClick="openModal(' {{ $table_name }}, {{ $query }} ')">
+<button class="btn edit-button" data-toggle="modal" data-target="#datasourceSelectModal" onClick="openModal('{{ $table_name }}', this)">
     <i class="fas fa-edit" style="margin-right:2px"></i>
+    <span class="query-text" hidden>{{ $query }}</span>
     Editer
 </button>
 
