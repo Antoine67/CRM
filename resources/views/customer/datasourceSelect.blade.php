@@ -1,6 +1,7 @@
 
 <script>
     var datasources = @json($tables);
+    var default_usage = @json($default_usage);
 </script>
 
 <!-- Modal -->
@@ -14,7 +15,16 @@
         </button>
       </div>
       <div class="modal-body">
-          @if (!empty($databases))
+        <select class="form-control" id="custom-selector">
+            <option value="default">Défaut</option>
+            <option value="custom">Personnalisé</option>
+        </select>
+        <hr/>
+        <span id="default" class="ds">
+            Cette option permet de renseigner des variables dans la partie "Edition", et d'appliquer la query par défaut définie par l'administrateur
+        </span>
+        @if (!empty($databases))
+        <span id="custom" class="ds">
           <h6 class="text-muted">Les modifications apportées ne seront effectives qu'après une <b>mise à jour</b> du profil</h6>
           <form> 
             <div class="form-group">
@@ -42,12 +52,13 @@
                 </ul>
             </div>
           </form>
-          @else
-                <p>Aucune sources de données trouvée, veuillez en <a href="/datasources" >ajouter une</a>.</p>
-          @endif
-          <div class="alert alert-warning fade show" id="msg-displayer" role="alert">
-              <span id="msg-txt"></span>
-          </div>
+        </span>
+        @else
+        <p>Aucune sources de données trouvée, veuillez en <a href="/datasources" >ajouter une</a>.</p>
+        @endif
+        <div class="alert alert-warning fade show" id="msg-displayer" role="alert">
+            <span id="msg-txt"></span>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

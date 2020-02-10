@@ -69,6 +69,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Autres</a>
                                 </li>
+                                @editor
+                                <li class="nav-item">
+                                    <a class="nav-link" id="editor-tab" data-toggle="tab" href="#editor" role="tab" aria-controls="editor" aria-selected="false">Edition</a>
+                                </li>
+                                @endeditor
                             </ul>
                         </div>
                     </div>
@@ -127,9 +132,9 @@
                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
 
-                                <!-- Start Information card -->
+                                <!-- Start Information card
                                     <div class=" mb-5">
-                                        <!-- Collapse Panel 1-->
+                                        <!-- Collapse Panel 1
                                         <a data-toggle="collapse" href="#collapseDiv1" role="button" aria-expanded="true" aria-controls="collapseDiv1" class="btn btn-primary btn-block py-2 shadow-sm with-chevron">
                                             <p class="d-flex align-items-center justify-content-between mb-0 px-3 py-2"><strong class="text-uppercase">Collapse Panel</strong><i class="fa fa-angle-down"></i></p>
                                         </a>
@@ -140,7 +145,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>-->
 
                                     <div class=" mb-5">
                                         <!-- Collapse Panel 2-->
@@ -192,6 +197,11 @@
                                 <!-- End Information card -->
                                 
                             </div>
+                            @editor
+                            <div class="tab-pane fade" id="editor" role="tabpanel" aria-labelledby="editor-tab">
+                                @include('customer.editor') 
+                            </div>
+                            @endeditor
                         </div>
                     </div>
                 </div>

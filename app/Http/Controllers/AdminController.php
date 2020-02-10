@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Database;
 use Config;
 use DB;
+use App\Utils;
+use App\DatasourceVariablesDefinition;
+use App\DatasourceDefault;
 
 class AdminController extends Controller
 {
@@ -61,12 +64,12 @@ class AdminController extends Controller
 
     public function testConnection($db) {
         Config::set("database.connections.testConnection", [
-            "host" => $this->ifNotNull( $db['host'],''),
-            "port" => $this->ifNotNull( $db['port'],''),
-            "database" =>  $this->ifNotNull( $db['name'],''),
-            "username" =>  $this->ifNotNull( $db['username'],''),
-            "password" =>  $this->ifNotNull( $db['password'],''),
-            "driver" =>  $this->ifNotNull( $db['driver'],''),
+            "host"          =>      Utils::ifNotNull( $db['host'],''),
+            "port"          =>      Utils::ifNotNull( $db['port'],''),
+            "database"      =>      Utils::ifNotNull( $db['name'],''),
+            "username"      =>      Utils::ifNotNull( $db['username'],''),
+            "password"      =>      Utils::ifNotNull( $db['password'],''),
+            "driver"        =>      Utils::ifNotNull( $db['driver'],''),
         ]);
         
         try {
@@ -77,11 +80,85 @@ class AdminController extends Controller
         return null;
     }
 
-    private function ifNotNull($val, $def) {
-        if(!isset($val)) {
-            return $def;
+    public function datadefault() {
+
+        $databases = Database::all();
+        if($databases->isEmpty()) $databases = null;
+
+        //Define editable areas
+        $editableArea = [
+            [ 'name' => 'Fichiers', 'table' => 'files' ] ,
+            [ 'name' => 'Tickets', 'table' => 'tickets' ],
+        ];
+
+        //Get query and vars of these editable areas
+        $datadefaults = array();
+        foreach($editableArea as $area) {
+
+            $default = DatasourceDefault::where('table_associated', '=', $area['table'])->first();
+           
+            array_push ($datadefaults,
+            [
+                'name' => $area['name'],
+                'default_query' => is_null($default) ?  "" : $default->query,
+                'id' => $default->id,
+                'id_database' => $default->id_database,
+            ]);
         }
-        return $val;
+
+        $vars =  DatasourceVariablesDefinition::all();
+
+        return view('admin/datadefault')
+            ->with('databases', $databases)
+            ->with('datadefaults', $datadefaults)
+            ->with('vars', $vars);
+    }
+
+    public function postDatadefault(Request $request) {
+        $datasources_variables_definition = $request->input('datasources_variables_definition');
+        $datasources_default = $request->input('datasources_default');
+        $var_id_to_delete = $request->input('var_id_to_delete');
+        
+		$needRefresh = false;
+        //Edit data default
+        if (isset($datasources_default))
+        {
+            try {
+                //Update data default definition
+                $datasourcedef = DatasourceDefault::find($datasources_default['id']);
+                $datasourcedef->update($datasources_default);
+
+            }catch (\Exception $e) {
+                return response()->json(['msg' => 'Error happened : ' . $e ,'needRefresh' => $needRefresh], 500);
+            }
+
+         
+        }else if (isset($datasources_variables_definition)) {
+            
+            try {
+                //Update or create associated vars
+                foreach($datasources_variables_definition as $var) {
+                    if( array_key_exists('id', $var) && $var['id'] != null ) {
+                        $datasourcevardef = DatasourceVariablesDefinition::find($var['id']);
+                        $datasourcevardef->update($var);
+                    }else {
+                        DatasourceVariablesDefinition::create($var);
+						$needRefresh = true;
+                    }
+                }
+            }catch (\Exception $e) {
+                return response()->json(['msg' => 'Error happened : ' . $e ,'needRefresh' => $needRefresh], 500);
+            }
+                
+        }else if(isset($var_id_to_delete)) {
+            DatasourceVariablesDefinition::find($var_id_to_delete)->delete();
+        }
+
+        else {
+            return response()->json(['msg' => 'Error : missing or incorrect fields','needRefresh' => $needRefresh], 500);
+        }
+        return response()->json(['msg' => 'Succès','needRefresh' => $needRefresh], 200);
+        
     }
 
 }

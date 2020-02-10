@@ -4,13 +4,13 @@
     "\\app",
     "\\app\\Http",
     "\\app\\Http\\Controllers",
+    "\\public",
     "\\resources",
     "\\resources\\views",
     "\\resources\\views\\admin",
-    "\\resources\\views\\auth",
-    "\\resources\\views\\layouts",
+    "\\resources\\views\\customer",
     "\\routes"
   ],
-  "SelectedNode": "\\app\\Http\\Controllers\\WelcomeController.php",
+  "SelectedNode": "\\public\\js\\datadefault.js",
   "PreviewInSolutionExplorer": false
 }

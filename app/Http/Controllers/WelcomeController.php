@@ -18,13 +18,22 @@ class WelcomeController extends Controller
         $data = null;
 
         //https://github.com/flachglasschweiz/php_pdo_informix/blob/master/x64
-        //Tried to connect to informix db, but driver are obsolete (PHP5), need to recompile source code into dll to make it work on PHP 7.X
-        /*$con = new PDO("informix:host=172.31.50.5; service=1504; database=db_cra; server=cuccx_acesi_uccx; protocol=onsoctcp; EnableScrollableCursors=1", "uccxhruser", "5:T{i,5e!KqD*8");
+        //Informix DB connection
+        /*
+        $informix = "DRIVER={DataDirect 7.1 Informix Wire Protocol};" .
+                "CommLinks=tcpip(Host=172.31.50.5);" .
+                "DatabaseName=db_cra;" .
+                "uid=uccxhrc; pwd=5:T{i,5e!KqD*8;".
+                "ServerName=cuccx_acesi_uccx; Host=172.31.50.5 ; Port=1504; Database=db_cra;";
 
-            $sql    = "SELECT * FROM test";
-            $prep   = $con->prepare($sql);
-            $prep->execute();
-            $data = $prep->fetchAll(PDO::FETCH_ASSOC);*/
+         $conn = odbc_connect($informix, 'uccxhrc', '5:T{i,5e!KqD*8') or die ("pb de connexion à la base\n" );
+
+         $sql = "select first 10 * from team ";
+         $rs = odbc_exec($conn,$sql);
+         odbc_fetch_row($rs);
+         dd (odbc_result_all($rs));
+         odbc_close($conn);*/
+
 
 
         //Graphs are automatically update every X seconds (see app/Console/Kernel.php & commands/RefreshGraphGrafana.php)

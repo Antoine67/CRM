@@ -95,6 +95,7 @@
 
                                 @admin
                                 <a class="dropdown-item" href="{{ url('datasources') }}">{{ __('Sources de données') }}</a>
+                                <a class="dropdown-item" href="{{ url('data-default') }}">{{ __('Paramètres par défaut') }}</a>
                                 @endadmin
                                 
 

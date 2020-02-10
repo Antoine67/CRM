@@ -51,17 +51,17 @@
             
             
 			    <td class="customer-logos desktop">
-                    @if(isset($customer->sharepoint_client))
+                    @if(isset($customer->sharepoint_client) &&!empty($customer->sharepoint_client))
                     <a href="#" onClick="openUrl('{{ $customer->sharepoint_client }}');">
                         <span name=""><i class="fas fa-lg fa-folder-open"></i></span>
                     </a>
                     @endif
-                    @if(isset($customer->sharepoint_extranet))
+                    @if(isset($customer->sharepoint_extranet) && !empty($customer->sharepoint_extranet))
                     <a href="#" onClick="openUrl('{{ $customer->sharepoint_extranet }}');">
                         <span name=""><i class="fas fa-lg fa-file-alt"></i></span>
                     </a>
                     @endif
-                     @if(isset($customer->web_url))
+                     @if(isset($customer->web_url) && !empty($customer->web_url))
                     <a href="#" onClick="openUrl('{{ $customer->web_url }}');">
                         <span name=""><i class="fas fa-lg fa-globe"></i></span>
                     </a>

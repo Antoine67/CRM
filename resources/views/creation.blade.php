@@ -27,7 +27,7 @@
                           <div id="profile-container">
                             <image id="profileImage" src="{{ asset('img/default.jpg')}}" />
                           </div>
-                          <input id="imageUpload" type="file"  name="pictureProfile" placeholder="Photo" required="" capture>
+                          <input id="imageUpload" type="file"  name="pictureProfile" placeholder="Photo"  capture>
                         </div>
 
 

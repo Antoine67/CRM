@@ -12,6 +12,8 @@ use Config;
 use App\Utils;
 use App\File;
 use App\Ticket;
+use App\DatasourcesDefaultUsage;
+use App\DatasourceDefault;
 
 class CreateCustomer extends Command
 {
@@ -55,7 +57,11 @@ class CreateCustomer extends Command
             if(is_null($customer)) {
                  $this->error('Customer not found with given ID');
             }
-            $this->refreshFromDataSource($customer);
+
+            $this->refreshFromDataSource(
+                                            $customer ,
+                                            DatasourcesDefaultUsage::where('id_customer', '=', $customer->id)->get()
+                                        );
         }else {
             $this->error('Invalid ID provided');
         }
@@ -71,28 +77,45 @@ class CreateCustomer extends Command
      *
      */
 
-    public function refreshFromDataSource($customer) {
+    public function refreshFromDataSource($customer, $datasourcesDefaultUsage) {
+
+        $dsefaultUsage = array();
+
+        //Get preferences : either default query, or custom one
+        foreach($datasourcesDefaultUsage as $dsdu) {
+            $dsDefaultUsage[$dsdu->table_associated] = $dsdu->default_usage;
+        }
+
 		$datasources = $customer->datasources()->get();
          
 		foreach($datasources as $ds) {
             
-			$db = $ds->database()->first();
-            
-			Config::set("database.connections.refreshConnection-$db->name", [
-				"host" => Utils::ifNotNull( $db->host,''),
-				"port" => Utils::ifNotNull($db->port,''),
-				"database" =>  Utils::ifNotNull($db->name,''),
-				"username" =>  Utils::ifNotNull( $db->username,''),
-				"password" =>  Utils::ifNotNull( $db->password,''),
-				"driver" =>  Utils::ifNotNull($db->driver,''),
-			]);
-        
 			try {
+                $query; $db;
+
+                //If default usage , or not specified -> execute default query on default db
+                if(!array_key_exists($ds->table_associated, $dsDefaultUsage) || $dsDefaultUsage[$ds->table_associated] > 0) {
+                    $defaultQuery = $this->refreshFromDefaultQuery($customer, $ds->table_associated);
+                    $db = $defaultQuery['db'];
+                    $query = $defaultQuery['query'];
+                }else {
+                    $db = $ds->database()->first();
+                    $query = $ds->query;
+                }
+
+                Config::set("database.connections.refreshConnection-$db->name", [
+				    "host" => Utils::ifNotNull( $db->host,''),
+				    "port" => Utils::ifNotNull($db->port,''),
+				    "database" =>  Utils::ifNotNull($db->name,''),
+				    "username" =>  Utils::ifNotNull( $db->username,''),
+				    "password" =>  Utils::ifNotNull( $db->password,''),
+				    "driver" =>  Utils::ifNotNull($db->driver,''),
+			    ]);
+
 
 				Ticket::where('id_customer', '=', $customer->id )->delete();
 
-                //$query = Utils::strReplaceFirstOcc('select', '', strtolower($ds->query));
-				$result = DB::connection("refreshConnection-$db->name")->select( $ds->query );
+				$result = DB::connection("refreshConnection-$db->name")->select( $query );
                 
                 foreach($result as $resultStd) {
                     try {
@@ -127,6 +150,12 @@ class CreateCustomer extends Command
 
     }
 
+
+    private function refreshFromDefaultQuery($customer, $table_associated) {
+        $this->info("Customer n°$customer on $table_associated  -> default query");
+        $dsdefault = DatasourceDefault::where('table_associated', '=', $table_associated)->first();
+        return ['db' => Database::find($dsdefault->id_database), 'query' => $dsdefault->query ];
+    }
 
 }
 

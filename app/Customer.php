@@ -49,7 +49,9 @@ class Customer extends Model
         return $this->hasMany('App\Ticket', 'id_customer', 'id');
     }
 
+
     public function getLastUpdate() {
+        if($this->updated_at === null) return " - ";
         return Carbon::create($this->updated_at->toDateTimeString(), 'Europe/Paris')->format('d/m/Y à H:i');
     }
 }

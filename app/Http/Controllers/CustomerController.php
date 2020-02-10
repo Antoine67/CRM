@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use App\Customer;
 use App\Database;
 use App\Datasource;
+use App\DatasourceVariablesDefinition;
+use App\DatasourceVariable;
+use App\DatasourcesDefaultUsage;
 use App\Ticket;
 use App\File;
 use DB;
@@ -55,15 +58,21 @@ class CustomerController extends Controller
     $tickets = $customer->tickets()->get();
     if($tickets->isEmpty()) $tickets = null;
     
+    $vars = DatasourceVariablesDefinition::all();
+    $user_vars = DatasourceVariable::where('id_customer', '=', $id )->get();
 
-   
+    $default_usage = DatasourcesDefaultUsage::where('id_customer', '=', $id )->get();
     return view('customer')
         ->with('customer',$customer)
         ->with('databases',$databases)
         ->with('datasources',$datasources)
         //->with('files', $customer->files()->get())
         ->with('tickets', $tickets)
-        ->with('tables',$tables);
+        ->with('tables',$tables)
+        ->with('vars', $vars)
+        ->with('user_vars', $user_vars)
+        ->with('default_usage', $default_usage)
+        ;
     }
 
     /***
@@ -91,6 +100,10 @@ class CustomerController extends Controller
                     'id_database' => $request->input('datasource')['databaseId'],
                 ]);
 
+                DatasourcesDefaultUsage::where('id_customer', '=', $id)
+                                        ->where('table_associated','=',$request->input('datasource')['tableAssociated'])
+                                        ->update(['default_usage'=> false]);
+
                 return response()->json([
                     'msg' => 'Mise à jour réussie',
                 ], 200);
@@ -101,11 +114,20 @@ class CustomerController extends Controller
                 'id_database' => $request->input('datasource')['databaseId'],
                 'id_customer' => $id,
             ]);
+                DatasourcesDefaultUsage::where('id_customer', '=', $id)
+                                        ->where('table_associated','=',$request->input('datasource')['tableAssociated'])
+                                        ->update(['default_usage'=> false]);
+
                 return response()->json([
                     'msg' => 'Création réussie',
                 ], 200);
             }
             
+        }
+        else if( $request->input('default_usage_table_name') !== null ) {
+            DatasourcesDefaultUsage::where('id_customer', '=', $id)
+                                    ->where('table_associated','=',$request->input('default_usage_table_name'))
+                                    ->update(['default_usage'=> true]);
         }
 
         //Update completely the current customer

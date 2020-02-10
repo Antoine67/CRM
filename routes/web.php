@@ -54,10 +54,12 @@ Route::group(['middleware' => ['need.login','user.level:'.$editor]], function ()
     Route::post('/editor-mode', 'EditorController@post');
 });
 
-//Routes which need to be logged in and have an editor, or admin account
+//Routes which need to be logged in and have an admin account
 Route::group(['middleware' => ['need.login','user.level:'.$admin]], function () {
     Route::get('/datasources', 'AdminController@datasources');
     Route::post('/datasources', 'AdminController@postDatasources');
+    Route::get('/data-default', 'AdminController@datadefault');
+    Route::post('/data-default', 'AdminController@postDatadefault');
     Route::get('/admin', 'AdminController@get');
 });
 
